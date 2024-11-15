@@ -3,7 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext"; // Import AuthContext
-import { toast } from "react-toastify";
+import axiosInstance from "../utils/AxiosInstance";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 const SignInForm = () => {
   const [formData, setFormData] = useState({
@@ -43,33 +45,32 @@ const SignInForm = () => {
     e.preventDefault();
     if (validateSignInForm()) {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/user/login`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-auth-token": process.env.REACT_APP_API_TOKEN,
-            },
-            body: JSON.stringify({
-              email: formData.email,
-              password: formData.password,
-            }),
-          }
-        );
+        const response = await axiosInstance.post("/restaurant/login", {
+          phone: formData.email,
+          password: formData.password,
+        });
 
-        const data = await response.json();
-
-        if (data?.success) {
-          localStorage.setItem("user", JSON.stringify(data));
-          toast(data?.message);
+        console.log(response.data);
+        const data = await response.data.result;
+        if (data.success) {
+          Cookies.set("user", data.restaurant.id, {
+            expires: 1,
+            sameSite: true,
+          });
           navigate("/");
+          toast.success("Login successful.");
         } else {
-          toast(data?.message);
+          toast.error("Login failed.");
         }
       } catch (error) {
+        if (error?.response.status === 401) {
+          const data = error.response.data;
+
+          toast.error(data.result);
+          setErrorMessage(data.result);
+        }
+
         console.error("Network error:", error);
-        setErrorMessage("Network error. Please try again later.");
       }
     }
   };
@@ -95,7 +96,7 @@ const SignInForm = () => {
           {/* Email */}
           <div>
             <input
-              type="email"
+              type="text"
               name="email"
               value={formData.email}
               onChange={handleChange}

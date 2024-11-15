@@ -16,22 +16,24 @@ import AddressManager from "./components/AddressManager";
 import Wallet from "./components/Wallet";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <AuthProvider>
-      <ToastContainer position="top-right" theme="dark"/>
+      <ToastContainer position="top-right" theme="dark" />
+      <Toaster />
       <Router>
         <div className="App">
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={< Home/>} />
+            <Route path="/" element={<Home />} />
             <Route path="/signin" element={<SignIn />} />
-            <Route path="/Signup" element={<SignUp/>}/>
+            <Route path="/Signup" element={<SignUp />} />
 
             {/* Protected Routes */}
-            
+
             <Route
               path="/favorites"
               element={
@@ -60,9 +62,7 @@ function App() {
                 </>
               }
             />
-            <Route path="/about" 
-              element={<PrivateRoute element={About} />} 
-            />
+            <Route path="/about" element={<PrivateRoute element={About} />} />
             <Route
               path="/profile"
               element={<PrivateRoute element={Profile} />}
@@ -75,10 +75,7 @@ function App() {
               path="/addressmanager"
               element={<PrivateRoute element={AddressManager} />}
             />
-            <Route
-              path="/wallet"
-              element={<PrivateRoute element={Wallet} />}
-            />
+            <Route path="/wallet" element={<PrivateRoute element={Wallet} />} />
           </Routes>
         </div>
       </Router>

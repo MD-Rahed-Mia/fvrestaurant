@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api_path_url, authToken } from "../secret";
+import Cookies from "js-cookie";
+
 const MainProfile = () => {
   const profile = [{ name: "Ibrahim", img: "./img/Ibrahimtest.jpg" }];
 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const localUser = JSON.parse(localStorage.getItem("user"));
-    
+    const id = Cookies.get("user");
+
+    console.log(id);
+
     async function fetchUserInformation() {
       try {
         const apiResponse = await fetch(
-          `${api_path_url}/user/profile-info?id=${localUser.id}`,
+          `${api_path_url}/restaurant/get-profile?id=${id}`,
           {
             headers: {
               "x-auth-token": authToken,
@@ -23,9 +27,11 @@ const MainProfile = () => {
 
         const result = await apiResponse.json();
 
-        if (result.success) {
-          setUser(result?.user);
+        if (result?.success) {
+          setUser(result?.restaurant);
         }
+
+        console.log(result);
       } catch (error) {
         console.log(error);
       }
@@ -33,6 +39,10 @@ const MainProfile = () => {
 
     fetchUserInformation();
   }, []);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   return (
     <div className="bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center min-h-screen p-2">
@@ -43,8 +53,8 @@ const MainProfile = () => {
             <div className="relative">
               <img
                 className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
-                src={user?.profileImage}
-                alt={profile.name}
+                src={user?.image}
+                alt={user?.name}
               />
               <div className="absolute bottom-0 right-0 bg-white rounded-full shadow-md">
                 <svg
@@ -65,7 +75,7 @@ const MainProfile = () => {
             </div>
           </div>
           <h2 className="mt-4 text-white text-center text-xl font-bold">
-            {user?.fullName}
+            {user?.name}
           </h2>
         </div>
 
@@ -75,26 +85,28 @@ const MainProfile = () => {
           {/* Address */}
           <div className="flex items-center space-x-2 rounded-lg shadow-md p-2">
             <div className="bg-purple-100 p-2 rounded-full">
-            <svg 
-              className="h-6 w-6 text-purple-500"  
-              xmlns="http://www.w3.org/2000/svg" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              strokeWidth={1.5} 
-              stroke="currentColor" >
-              <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-
+              <svg
+                className="h-6 w-6 text-purple-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                />
+              </svg>
             </div>
             <span className="text-gray-700 font-semibold">Address</span>
-            <span className=" text-gray-500">Lakshmipur,new market,4th floor</span>
+            <span className=" text-gray-500">{user?.address}</span>
           </div>
 
           {/* Phone Number */}
@@ -116,7 +128,7 @@ const MainProfile = () => {
               </svg>
             </div>
             <span className="text-gray-700 font-semibold">Phone Number</span>
-            <span className=" text-gray-500">{user?.phoneNumber}</span>
+            <span className=" text-gray-500">{user?.phone}</span>
           </div>
 
           {/* Email */}
@@ -138,7 +150,9 @@ const MainProfile = () => {
               </svg>
             </div>
             <span className="text-gray-700 font-semibold">Email</span>
-            <span className=" text-gray-500">{user?.email}</span>
+            <span className=" text-gray-500">
+              {user?.email || "email is not setup."}
+            </span>
           </div>
 
           {/* Password */}
@@ -160,7 +174,7 @@ const MainProfile = () => {
               </svg>
             </div>
             <span className="text-gray-700 font-semibold">Password</span>
-            <span className=" text-gray-500" >******</span>
+            <span className=" text-gray-500">******</span>
           </div>
         </div>
         {/* Edit Profile Button */}
@@ -173,8 +187,6 @@ const MainProfile = () => {
           </Link>
         </div>
       </div>
-
-
     </div>
   );
 };
