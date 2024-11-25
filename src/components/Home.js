@@ -1,90 +1,114 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import Footer from "../Layout/Footer";
+import axiosInstance from "../utils/AxiosInstance";
+import Cookies from "js-cookie";
+import RestauarntMenuCard from "./restaurant/RestauarntMenuCard";
+import toast from "react-hot-toast";
 
 const Home = () => {
+  const [restaurant, setRestaurant] = useState(null);
+
+  // menu list
+  const [menus, setMenus] = useState(null);
+
+  useEffect(() => {
+    const id = Cookies.get("user");
+
+    async function getRestaurant() {
+      if (id === undefined) {
+        toast.error("Please login properly.");
+        return false;
+      }
+
+      try {
+        const response = await axiosInstance.get(`/restaurant/get-profile?id=${id}`);
+        const data = await response.data;
+
+        if (data.success) {
+          setRestaurant(data.restaurant);
+        } else {
+          toast.error("Failed to fetch restaurant data.");
+        }
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 404) {
+            toast.error("Restaurant not found (404).");
+          } else if (error.response.status === 500) {
+            toast.error("Server error (500).");
+          } else {
+            toast.error("Something went wrong.");
+          }
+        } else {
+          toast.error("Network error.");
+        }
+        console.error("Error fetching restaurant:", error.message);
+      }
+    }
+
+    async function getMenus() {
+      if (id === undefined) {
+        toast.error("Please login properly.");
+        return false;
+      }
+
+      try {
+        const response = await axiosInstance.get(`/restaurant/list-of-menu?id=${id}`);
+        const data = await response.data;
+
+        if (data?.success) {
+          setMenus(data.menu);
+        } else {
+          toast.error("Failed to fetch menu data.");
+        }
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 404) {
+            toast.error("Menus not found (404).");
+          } else if (error.response.status === 500) {
+            toast.error("Server error (500).");
+          } else {
+            toast.error(error.response.data.message || "Something went wrong.");
+          }
+        } else {
+          toast.error("Network error.");
+        }
+        console.error("Error fetching menus:", error.message);
+      }
+    }
+
+    getRestaurant();
+    getMenus();
+  }, []);
+
   return (
-    <div className='bg-gradient-to-r from-purple-200 to-blue-20 min-h-screen'>
+    <div className="bg-gradient-to-r from-purple-200 to-blue-20 min-h-screen">
       {/* Header Section */}
-      <div className= 'w-full fixed z-10 '>
+      <div className="w-full fixed z-10 ">
         <header className="bg-white p-4 m-4 -mb-4 rounded-lg shadow-lg flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <img
-              src="img/burger.png"
+              src={restaurant?.image || "img/burger.png"}
               alt="Boom Boom Burger"
               className="w-20 h-16 rounded-md object-cover shadow-md"
             />
             <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-gray-800">Boom Boom Burger</h1>
-              <p className="text-xs">Lakshmipur, Bangladesh</p>
+              <h1 className="text-xl font-bold text-gray-800">
+                {restaurant?.name}
+              </h1>
+              <p className="text-xs">{restaurant?.address}</p>
             </div>
           </div>
         </header>
       </div>
 
-      <div className="p-4">
-        {/* Delivery Info Section */}
-        <section className="bg-white mt-28 p-4 rounded-lg shadow-lg">
-          <div className="flex items-center space-x-2">
-            <svg
-              className="h-6 w-6 text-purple-600"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5} // Fixed attribute
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round" // Fixed attribute
-                strokeLinejoin="round" // Fixed attribute
-                d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-              />
-            </svg>
-            <span className="text-lg font-semibold text-gray-800">4.7</span>
-            <span className="text-sm text-gray-600">5000+ ratings</span>
-          </div>
-        </section>
-
-        {/* Items Section */}
-        <section className="mt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
-            {/* Item Example */}
-            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition">
-              <img
-                src="img/burger.png"
-                alt="Smokey BBQ Chicken Cheese Burger"
-                className="w-full h-32 sm:h-48 object-cover rounded-md"
-              />
-              <h3 className="text-sm font-semibold text-gray-800 mx-2 mt-2">
-                Smokey BBQ Chicken Cheese Burger
-              </h3>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-600 mx-2 my-1">Tk 240</p>
-                <div className='flex flex-row items-center'>
-                  <svg
-                    className="h-5 w-5 text-purple-500"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5} // Fixed attribute
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round" // Fixed attribute
-                      strokeLinejoin="round" // Fixed attribute
-                      d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-                    />
-                  </svg>
-                  <span className="px-2 font-bold text-gray-700">4.7</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Repeat more items as needed */}
-          </div>
-        </section>
-
-        <Footer />
+      <div className="py-[120px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-8 gap-12">
+        {menus &&
+          menus?.map((item, index) => {
+            return <RestauarntMenuCard menu={item} key={index} />;
+          })}
       </div>
+
+      <Footer />
     </div>
   );
 };

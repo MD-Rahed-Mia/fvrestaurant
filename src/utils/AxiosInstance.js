@@ -10,7 +10,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(function (config) {
   config.headers = {
-    "Content-Type": "application/json",
     "x-auth-token": process.env.REACT_APP_API_TOKEN,
   };
 

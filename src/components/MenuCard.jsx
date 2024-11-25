@@ -2,12 +2,17 @@ import React from "react";
 
 export default function MenuCard({ detail }) {
   return (
-    <div className="bg-white p-2 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition">
+    <div className="bg-white relative p-2 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition">
       <img
         src={detail?.image || "/img/burger.png"}
         alt={detail?.name}
         className="w-32 mx-auto block my-2 h-32 sm:h-48 object-cover rounded-md"
       />
+
+      {/* sub menu */}
+
+      
+
       <h3 className="text-sm font-semibold text-gray-800 mx-2 mt-2">
         {detail?.name}
       </h3>
@@ -17,9 +22,11 @@ export default function MenuCard({ detail }) {
         </span>
       </div>
       <div className="flex items-center justify-between px-2">
-        <p className="line-through text-orange-500 text-sm">TK {detail?.basedPrice}</p>
+        <p className="line-through text-orange-500 text-sm">
+          TK {detail?.basedPrice}
+        </p>
         <p className="text-gray-600 my-1 font-extrabold">
-          TK {detail?.offerPrice} 
+          TK {detail?.offerPrice}
         </p>
 
         {/* <div className="flex items-center justify-between">

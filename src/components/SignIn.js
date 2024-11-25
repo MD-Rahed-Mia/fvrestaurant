@@ -53,6 +53,8 @@ const SignInForm = () => {
         console.log(response.data);
         const data = await response.data.result;
         if (data.success) {
+          console.log(data);
+          localStorage.setItem("token", data.token);
           Cookies.set("user", data.restaurant.id, {
             expires: 1,
             sameSite: true,
@@ -161,7 +163,7 @@ const SignInForm = () => {
           {/* Sign Up Link */}
           <div className="text-center text-sm text-gray-500">
             Don't have an account?{" "}
-            <Link to="/" className="text-blue-500 underline">
+            <Link to="/register" className="text-blue-500 underline">
               Sign Up
             </Link>
           </div>
