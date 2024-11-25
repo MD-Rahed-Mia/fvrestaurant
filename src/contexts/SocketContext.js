@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import Cookies from "js-cookie";
+import { socketUri } from "../secret";
 
 const SocketContext = createContext(null);
-
-const socketUri = "http://localhost:3000";
 
 export const useSocket = () => {
   return useContext(SocketContext);
@@ -27,7 +26,7 @@ export const SocketProvider = ({ children }) => {
     socketInstance.on("connect", () => {
       console.log("user is connected.");
     });
-    
+
     socketInstance.emit("auth", user);
 
     setSocket(socketInstance);
