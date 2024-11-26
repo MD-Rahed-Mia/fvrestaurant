@@ -5,17 +5,18 @@ import OrderCard from "./order/OrderCard";
 import Loading from "./loading/Loading";
 
 function Order() {
-  const [selectedStatus, setSelectedStatus] = useState("new"); // Tracks the selected order status
-  const [orders, setOrders] = useState([]); // Stores orders from the server
+  const [selectedStatus, setSelectedStatus] = useState("new");
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(null);
   const [total, setTotal] = useState(0);
 
   // Fetch orders from the server based on the selected status
-  const fetchOrders = async (status) => {
+  const fetchOrders = async () => {
     try {
+      setTotal(0);
+      setOrders([]);
       setLoading(true);
       const id = Cookies.get("user");
-
       if (id === undefined) {
         setLoading(true);
         return false;
@@ -39,7 +40,6 @@ function Order() {
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrders([]); // Clear orders on error
-
       setTotal(0);
       setLoading(false);
     }
@@ -47,12 +47,11 @@ function Order() {
 
   // Use effect to fetch orders whenever the selected status changes
   useEffect(() => {
-    fetchOrders(selectedStatus);
+    fetchOrders();
   }, [selectedStatus]);
 
   useEffect(() => {
-    console.log(orders);
-
+    // console.log(orders);
     //  setTotal(orders?.total);
   }, [orders]);
 
@@ -72,10 +71,16 @@ function Order() {
         {["new", "pending", "complete", "cancelled"].map((status) => (
           <div
             key={status}
-            className={`w-28 cursor-pointer ${
-              selectedStatus === status ? "text-blue-500 relative" : ""
+            className={`w-28 cursor-pointer select-none ${
+              selectedStatus === status
+                ? "text-blue-500 relative select-none"
+                : ""
             }`}
-            onClick={() => setSelectedStatus(status)}
+            onClick={() => {
+              setSelectedStatus(status);
+              setTotal(0);
+              setOrders([]);
+            }}
           >
             <span className="relative">
               {status}
@@ -101,36 +106,7 @@ function Order() {
                 return <OrderCard key={index} order={order} />;
               })}
             </ul>
-          ) : (
-            <main className="flex items-center justify-center min-h-screen bg-white ">
-              <div className="text-center">
-                {/* Icon with Cart */}
-                <div className="flex justify-center mb-4">
-                  <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 rounded-full">
-                    <svg
-                      className="h-16 w-16 text-blue-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Text Content */}
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                  No order yet!
-                </h2>
-              </div>
-            </main>
-          )}
+          ) : null}
         </div>
       </main>
     </div>

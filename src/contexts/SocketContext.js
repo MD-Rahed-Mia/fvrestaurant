@@ -30,6 +30,12 @@ export const SocketProvider = ({ children }) => {
     socketInstance.emit("auth", user);
 
     setSocket(socketInstance);
+
+    return () => {
+      if (socketInstance) {
+        socketInstance.disconnect();
+      }
+    };
   }, []);
 
   return (

@@ -1,7 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import axiosInstance from "../../utils/AxiosInstance";
+import { Button, Popconfirm } from "antd";
+import { useSocket } from "../../contexts/SocketContext";
 
 export default function OrderCard({ order }) {
   const items = order.items;
+
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isRejectModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isRejectModalOpen]);
+
+  // handle accept order
+  async function handleAcceptOrder(id) {
+    try {
+      if (!id) {
+        toast.error("required order id.");
+        return;
+      }
+
+      const response = await axiosInstance.put(
+        `/restaurant/accept-order-by-restaurant?order-id=${id}`
+      );
+      console.log(await response.data);
+
+      // data
+      const data = await response.data;
+
+      if (data?.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      throw new Error(error);
+    }
+  }
 
   return (
     <div className="p-4 rounded-md shadow-lg mt-4 border-2 ">
@@ -16,6 +57,12 @@ export default function OrderCard({ order }) {
               ? "px-4 py-1 text-white rounded-full text-sm bg-blue-700"
               : order.status === "pending"
               ? "px-4 py-1 text-white rounded-full text-sm bg-orange-700"
+              : order.status === "accept by restaurant"
+              ? "px-4 py-1 text-white rounded-full text-sm bg-orange-400"
+              : order.status === "cancelled by restaurant"
+              ? "px-4 py-1 text-white rounded-full text-sm bg-red-700"
+              : order.status === "ready for pickup"
+              ? "px-4 py-1 text-white rounded-full text-sm bg-blue-400"
               : null
           }
         >
@@ -31,9 +78,17 @@ export default function OrderCard({ order }) {
 
       <p>
         Payment method:
-        <span className="font-extrabold"> {order.paymentMethod || "COD"}</span>
+        <span className="font-extrabold"> {order.peymentMethod || "COD"}</span>
       </p>
       <p className="text-sm">{order.orderDate}</p>
+
+      {order.status === "cancelled by restaurant" ? (
+        <p>
+          Reason-{" "}
+          <span className="text-sm text-orange-600">{order.cancelReason}</span>
+        </p>
+      ) : null}
+
       <p>
         Message:
         <span>
@@ -56,6 +111,7 @@ export default function OrderCard({ order }) {
               <td className="border px-3 text-[14px] font-extrabold">
                 Quantity
               </td>
+              <td className="border px-3 text-[14px] font-extrabold">Price</td>
             </tr>
           </thead>
 
@@ -67,6 +123,9 @@ export default function OrderCard({ order }) {
                     <td className="border px-4">{index + 1}</td>
                     <td className="text-sm border">{item.name}</td>
                     <td className="border">{item.quantity}</td>
+                    <td className="border  px-4">
+                      {item.quantity * item.offerPrice}
+                    </td>
                   </tr>
                 );
               })}
@@ -76,6 +135,150 @@ export default function OrderCard({ order }) {
       <p>
         Amount: <span className="font-extrabold">BDT {order.totalAmount}</span>
       </p>
+
+      {isRejectModalOpen ? (
+        <RejectOrderCard
+          setIsRejectModalOpen={setIsRejectModalOpen}
+          id={order._id}
+        />
+      ) : null}
+
+      {/* order decline and accept */}
+      {order.status === "pending" ? (
+        <div className="w-full flex  mt-4 items-center justify-center gap-5">
+          <button
+            onClick={() => setIsRejectModalOpen(true)}
+            className="px-4 py-2 rounded-full text-center text-white hover:bg-red-200 bg-red-500"
+          >
+            Decline
+          </button>
+          <button
+            onClick={() => handleAcceptOrder(order?._id)}
+            className="px-4 py-2 rounded-full text-center text-white hover:bg-blue-800 bg-blue-500"
+          >
+            Accept
+          </button>
+        </div>
+      ) : null}
+
+      {/* food is ready for pickup */}
+
+      {order.status === "accept by restaurant" ? (
+        <ReadyForPickup id={order._id} />
+      ) : null}
     </div>
+  );
+}
+
+function RejectOrderCard({ setIsRejectModalOpen, id }) {
+  const [reason, setReason] = useState({ reason: "" });
+
+  // handle reason
+  function handleOnChange(e) {
+    setReason((prev) => ({ ...prev, reason: e.target.value }));
+    // console.log(reason);
+  }
+
+  // handle accept order
+  async function handleRejctOrder(id) {
+    try {
+      if (!id) {
+        toast.error("required order id.");
+        return;
+      }
+
+      const response = await axiosInstance.put(
+        `/restaurant/cancel-order-by-restaurant?order-id=${id}`,
+        reason
+      );
+      // console.log(await response.data);
+
+      // data
+      const data = await response.data;
+
+      if (data?.success) {
+        toast.success(data.message);
+        setIsRejectModalOpen(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      throw new Error(error);
+    }
+  }
+
+  return (
+    <div className="fixed z-50 top-0 left-0 w-full h-full bg-[#0000005c] flex items-center justify-center">
+      <div className="w-[80%] md:w-[50%] bg-white p-6 rounded-lg shadow-lg relative">
+        <textarea
+          name="reason"
+          placeholder="Please explain reason for cancelled order"
+          id="reason"
+          className="w-full p-2 border shadow-lg rounded-md"
+          onChange={handleOnChange}
+          value={reason.value}
+        ></textarea>
+        <div className="mt-4 flex justify-end gap-3">
+          <button
+            onClick={() => setIsRejectModalOpen(false)} // Close the modal
+            className="px-4 py-2 rounded-full bg-gray-500 text-white"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              handleRejctOrder(id);
+            }}
+            className="px-4 py-2 rounded-full bg-red-500 text-white"
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReadyForPickup({ id }) {
+  const socket = useSocket();
+  const confirm = async () => {
+    if (!id) {
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.put(
+        `/restaurant/ready-for-pickup?order-id=${id}`
+      );
+
+      console.log(await response.data);
+      const data = await response.data;
+
+      if (data.success) {
+        if (socket) {
+          socket.on("notifyParcelReadyForPickup", data);
+        }
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
+  return (
+    <>
+      <div className="w-full flex items-center justify-center mx-auto  mt-4">
+        <Popconfirm
+          title="request pickup"
+          description="make sure your food is ready?"
+          onConfirm={confirm}
+          onOpenChange={() => console.log("open change")}
+        >
+          <Button className="px-4 py-2 rounded-full text-center text-white hover:bg-blue-800 bg-blue-500">
+            Ready for pickup
+          </Button>
+        </Popconfirm>
+      </div>
+    </>
   );
 }
