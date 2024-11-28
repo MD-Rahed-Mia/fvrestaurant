@@ -1,6 +1,8 @@
 import React from "react";
 
 export default function MenuCard({ detail }) {
+  console.log("addons: : ", detail?.addons);
+
   return (
     <div className="bg-white relative p-2 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition">
       <img
@@ -10,8 +12,6 @@ export default function MenuCard({ detail }) {
       />
 
       {/* sub menu */}
-
-      
 
       <h3 className="text-sm font-semibold text-gray-800 mx-2 mt-2">
         {detail?.name}

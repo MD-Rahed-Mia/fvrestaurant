@@ -14,7 +14,9 @@ export default function ItemPostPopup({ setEditModal }) {
     status: "in-stock",
     preparationTime: "",
     isVeg: true,
-    image: null, // Initialize image as null
+    image: null,
+    addonsTitle: "",
+    addonsPrice: 0,
   });
 
   function handleOnChange(e) {
@@ -26,6 +28,8 @@ export default function ItemPostPopup({ setEditModal }) {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+
+    console.log(formData);
   }
 
   // handle form submission
@@ -63,6 +67,8 @@ export default function ItemPostPopup({ setEditModal }) {
       form.append("preparationTime", formData.preparationTime);
       form.append("isVeg", formData.isVeg);
       form.append("restaurantId", restaurantId);
+      form.append("addonsTitle", formData.addonsTitle);
+      form.append("addonsPrice", formData.addonsPrice);
 
       if (formData.image) {
         form.append("image", formData.image);
@@ -248,6 +254,46 @@ export default function ItemPostPopup({ setEditModal }) {
               <option value={false}>Non-Vegetarian</option>
             </select>
           </label>
+
+          {/* Veg/Non-Veg */}
+          {/* <label className="block">
+            <span className="text-gray-700">Addons</span>
+            <select
+              className="mt-1 block w-full border rounded-md p-2"
+              name="isVeg"
+              value={formData.isVeg}
+              onChange={handleOnChange}
+            >
+              <option value={true}>Vegetarian</option>
+              <option value={false}>Non-Vegetarian</option>
+            </select>
+          </label> */}
+
+          {/* addons */}
+          <div>
+            <label htmlFor="addons">Addons</label>
+            <div>
+              <input
+                type="text"
+                name="addonsTitle"
+                id="addonsTitle"
+                placeholder="addons title"
+                className="mt-1 block w-full border rounded-md p-2"
+                value={formData.addonsTitle}
+                onChange={handleOnChange}
+              />
+
+              <input
+                type="number"
+                name="addonsPrice"
+                id="addonsPrice"
+                placeholder="price"
+                className="mt-1 block w-full border rounded-md p-2"
+                value={formData.addonsPrice}
+                onChange={handleOnChange}
+              />
+            </div>
+          </div>
 
           {/* Submit Button */}
           <button

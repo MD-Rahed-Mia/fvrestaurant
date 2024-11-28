@@ -5,10 +5,15 @@ import EditMenuModal from "../menu/EditMenuModal";
 import { RxCross2 } from "react-icons/rx";
 
 import { BsThreeDots } from "react-icons/bs";
+import AddNewAddons from "./AddNewAddons";
+import { Button } from "antd";
+import EditAddons from "./EditAddons";
+import DeleteAddon from "./DeleteAddons";
 
 export default function RestauarntMenuCard({ menu }) {
   const [editModal, setEditModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  console.log(menu.addons);
   return (
     <>
       {/* Delivery Info Section */}
@@ -88,6 +93,9 @@ export default function RestauarntMenuCard({ menu }) {
             <span className="px-2 font-bold text-gray-700">4.7</span>
           </div>
         </div>
+
+        {/* addons here */}
+        {menu?.addons.length > 0 ? <MenuAddons menu={menu} /> : null}
       </div>
 
       {/* Repeat more items as needed */}
@@ -110,9 +118,68 @@ const MenuCardMenu = ({ item, editModal, setEditModal }) => {
     <>
       <div className="p-4 border-2 shadow-md absolute top-10 right-4 rounded-md bg-white">
         <ul>
-          <li onClick={() => setEditModal(!editModal)}>Edit menu</li>
+          <Button
+            onClick={() => setEditModal(!editModal)}
+            className="px-4 my-2 py-1 w-full bg-blue-500 text-white rounded-md"
+          >
+            Edit menu
+          </Button>
+          <li>
+            <AddNewAddons id={item._id} />
+          </li>
         </ul>
       </div>
     </>
+  );
+};
+
+const MenuAddons = ({ menu }) => {
+  return (
+    <div>
+      <label htmlFor="addons" className="px-4 p-2 text-lg ">
+        Addons list
+      </label>
+      <div>
+        <table className="w-full text-center">
+          <thead>
+            <tr>
+              <td className="border px-2 py-1">SL</td>
+              <td className="border px-2 py-1">Title</td>
+              <td className="border px-2 py-1">Price</td>
+              <td className="border px-2 py-1">status</td>
+              <td className="border px-2 py-1">action</td>
+            </tr>
+          </thead>
+          {menu?.addons.length > 0
+            ? menu?.addons.map((item, index) => {
+                return (
+                  <tr>
+                    <td className="border px-2 py-1">{index + 1}</td>
+                    <td className="border px-2 py-1">{item.title}</td>
+                    <td className="border px-2 py-1">{item.price}</td>
+                    <td className="border px-2 py-1">
+                      {item.status ? (
+                        <span className="px-1 py-1 bg-blue-300 text-[12px]">
+                          active
+                        </span>
+                      ) : (
+                        <span className="px-1 py-1 bg-orange-300 text-[12px]">
+                          disabled
+                        </span>
+                      )}
+                    </td>
+                    <td className="border px-2 py-1">
+                      <div className="flex items-center justify-center gap-3">
+                      <EditAddons addon={item} id={menu._id} />
+                      <DeleteAddon addon={item} id={menu._id} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            : null}
+        </table>
+      </div>
+    </div>
   );
 };
