@@ -65,11 +65,15 @@ const SignInForm = () => {
           toast.error("Login failed.");
         }
       } catch (error) {
-        if (error?.response.status === 401) {
-          const data = error.response.data;
+        if (error.response) {
+          // console.log(error.response);
 
-          toast.error(data.result);
-          setErrorMessage(data.result);
+          const { data } = error.response;
+
+          console.log(data);
+
+          toast.error(data.message);
+          toast.error(data.errorMessage);
         }
 
         console.error("Network error:", error);

@@ -192,7 +192,7 @@ export default function ItemPostPopup({ setEditModal }) {
           <label className="block">
             <span className="text-gray-700">Price</span>
             <input
-              type="number"
+              type="text"
               className="mt-1 block w-full border rounded-md p-2"
               placeholder="e.g., 240"
               name="basedPrice"
