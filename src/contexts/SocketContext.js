@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
     console.log(restaurantId);
 
     if (!restaurantId) return;
-    const newSocket = io("http://localhost:3000", {
+    const newSocket = io(process.env.REACT_APP_SOCKET_URI, {
       auth: {
         token: restaurantId,
       },
