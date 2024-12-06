@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext"; // Import AuthContext
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie"
 
 const LogoutConfirmationModal = ({ show, onClose, onConfirm }) => {
   if (!show) return null;
@@ -41,7 +42,8 @@ const Profile = () => {
 
   const handleLogoutConfirm = () => {
     
-    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    Cookies.remove("restaurantId")
     navigate("/signin"); // Redirect to sign-in page after logout
   };
 

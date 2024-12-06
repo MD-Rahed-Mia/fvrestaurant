@@ -1,5 +1,7 @@
 // src/contexts/AuthContext.js
-import React, { createContext, useContext, useState} from "react";
+import React, { createContext, useContext, useState } from "react";
+
+import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
@@ -18,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    Cookies.remove("restaurantId");
     setCurrentUser(null);
   };
 

@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Cookies from "js-cookie";
 
 const PrivateRoute = ({ element: Component }) => {
-  const [currentUser, setCurrentUser] = useState(Cookies.get("user"));
+  const [currentUser, setCurrentUser] = useState(Cookies.get("restaurantId"));
 
   return currentUser ? <Component /> : <Navigate to="/signin" />;
 };
