@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useSocket } from "../../contexts/SocketContext";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/AxiosInstance";
+import { useSocket } from "../../contexts/SocketContext";
 
 export default function NewOrderCard() {
-  const socket = useSocket();
   const [isActive, setIsActive] = useState(false);
-
-  console.log(socket);
 
   const [newOrder, setNewOrder] = useState(null);
 
-  //  console.log(socket);
+  const { socket } = useSocket();
 
-  useEffect(() => {
-    if (socket) {
-      // Only set up the listener if the socket is available
-      socket.on("receiveNewOrder", (data) => {
-        setNewOrder(data);
-        console.log(data); // Make sure to log the incoming data to see if it's received
-        setIsActive(true);
-      });
-    }
-  }, [socket]); // Include socket in the dependency array
+  if (socket) {
+    socket.on("receiveNewOrder", (data) => {
+      setNewOrder(data);
+    });
+  }
+
+  // console.log(socket);
 
   // handle accept order
   async function handleAcceptOrder(id) {
@@ -33,7 +27,7 @@ export default function NewOrderCard() {
       }
 
       const response = await axiosInstance.put(
-        `/restaurant/accept-order-by-restaurant?order-id=${id}`
+        `/restaurant/accept-order-by-restaurant?order-id=${id}`,
       );
       console.log(await response.data);
 
@@ -42,6 +36,11 @@ export default function NewOrderCard() {
 
       if (data?.success) {
         toast.success(data.message);
+
+        if (socket) {
+          socket.emit("sendOrderToRider", data.result);
+        }
+        
         setIsActive(false);
         setNewOrder(null);
       } else {
@@ -55,7 +54,7 @@ export default function NewOrderCard() {
 
   return (
     <>
-      {isActive ? (
+      {newOrder ? (
         <div className="fixed h-screen w-full bg-[#00000062] z-50  flex items-center justify-center">
           <div className="w-[85%] p-4 min-h-[200px] bg-white rounded-lg border-2 shadow-lg ">
             <h1 className="text-center font-extrabold text-blue-600 text-3xl my-4 capitalize underline">

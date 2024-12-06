@@ -357,6 +357,7 @@ const SignUpForm = () => {
           </div>
         </form>
 
+        
         <div className="text-center">
           <Link to="/signin" className="text-blue-500">
             Already have an account? Login

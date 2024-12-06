@@ -13,7 +13,7 @@ import DeleteAddon from "./DeleteAddons";
 export default function RestauarntMenuCard({ menu }) {
   const [editModal, setEditModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  console.log(menu.addons);
+ // console.log(menu.addons);
   return (
     <>
       {/* Delivery Info Section */}

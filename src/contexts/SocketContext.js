@@ -1,44 +1,56 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import Cookies from "js-cookie";
-import { socketUri } from "../secret";
 
-const SocketContext = createContext(null);
-
-export const useSocket = () => {
-  return useContext(SocketContext);
-};
+export const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
+  const [isActive, setIsActive] = useState(false);
 
-  const user = Cookies.get("user");
+  // console.log(rider)
 
   useEffect(() => {
-    // token
-    const token = localStorage.getItem("token");
-    const socketInstance = io(socketUri, {
+    const restaurantId = Cookies.get("restaurantId");
+
+    console.log(restaurantId);
+
+    if (!restaurantId) return;
+    const newSocket = io("http://localhost:3000", {
       auth: {
-        tokon: token,
+        token: restaurantId,
       },
     });
 
-    socketInstance.on("connect", () => {
-      console.log("user is connected.");
+    newSocket.on("connect", () => {
+      console.log("Socket is connected.");
     });
 
-    socketInstance.emit("auth", user);
+    newSocket.on("connect_error", (err) => {
+      console.error("Connection error:", err.message);
+    });
 
-    setSocket(socketInstance);
+    newSocket.emit("auth", restaurantId);
 
-    return () => {
-      if (socketInstance) {
-        socketInstance.disconnect();
+    newSocket.on("connectionStatus", (data) => {
+      console.log(data.status);
+      if (data.status === "connected") {
+        setIsActive(true);
+      } else {
+        setIsActive(false);
       }
-    };
-  }, []);
+    });
+
+    setSocket(newSocket);
+  }, []); // Re-run effect when rider changes
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, isActive }}>
+      {children}
+    </SocketContext.Provider>
   );
+};
+
+export const useSocket = () => {
+  return useContext(SocketContext);
 };

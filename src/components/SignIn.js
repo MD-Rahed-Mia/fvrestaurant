@@ -53,12 +53,9 @@ const SignInForm = () => {
         console.log(response.data);
         const data = await response.data.result;
         if (data.success) {
-          console.log(data);
+         // console.log(data);
           localStorage.setItem("token", data.token);
-          Cookies.set("user", data.restaurant.id, {
-            expires: 1,
-            sameSite: true,
-          });
+          Cookies.set("restaurantId", data.restaurant.id);
           navigate("/");
           toast.success("Login successful.");
         } else {

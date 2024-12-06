@@ -1,5 +1,5 @@
 // src/App.js
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import MyChat from "./components/MyChat";
@@ -18,91 +18,83 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "react-hot-toast";
-import { SocketProvider } from "./contexts/SocketContext";
 import NewOrderCard from "./components/order/NewOrderCard";
+import { useSocket } from "./contexts/SocketContext";
+import Cookies from "js-cookie";
 
 function App() {
-
-
-
-
+ 
 
   return (
     <AuthProvider>
-      <SocketProvider>
-        <ToastContainer position="top-right" theme="dark" />
+      <ToastContainer position="top-right" theme="dark" />
+      {/* new order card */}
 
-        {/* new order card */}
+      <NewOrderCard />
 
-        <NewOrderCard />
+      <Toaster />
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route
+              path="/"
+              element={
+                <>
+                  <PrivateRoute element={Home} />
+                </>
+              }
+            />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/register" element={<SignUp />} />
 
-        <Toaster />
-        <Router>
-          <div className="App">
-            <Routes>
-              {/* Public Routes */}
-              <Route
-                path="/"
-                element={
-                  <>
-                    <PrivateRoute element={Home} />
-                  </>
-                }
-              />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/register" element={<SignUp />} />
+            {/* Protected Routes */}
 
-              {/* Protected Routes */}
+            <Route
+              path="/favorites"
+              element={
+                <>
+                  <PrivateRoute element={MyChat} />
+                  <Footer />{" "}
+                </>
+              }
+            />
 
-              <Route
-                path="/favorites"
-                element={
-                  <>
-                    <PrivateRoute element={MyChat} />
-                    <Footer />{" "}
-                  </>
-                }
-              />
-
-              <Route
-                path="/home"
-                element={
-                  <>
-                    <PrivateRoute element={Home} />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/order"
-                element={
-                  <>
-                    <PrivateRoute element={Order} />
-                    <Footer />{" "}
-                  </>
-                }
-              />
-              <Route path="/about" element={<PrivateRoute element={About} />} />
-              <Route
-                path="/profile"
-                element={<PrivateRoute element={Profile} />}
-              />
-              <Route
-                path="/liveChat"
-                element={<PrivateRoute element={LiveChat} />}
-              />
-              <Route
-                path="/addressmanager"
-                element={<PrivateRoute element={AddressManager} />}
-              />
-              <Route
-                path="/wallet"
-                element={<PrivateRoute element={Wallet} />}
-              />
-            </Routes>
-          </div>
-        </Router>
-      </SocketProvider>
+            <Route
+              path="/home"
+              element={
+                <>
+                  <PrivateRoute element={Home} />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/order"
+              element={
+                <>
+                  <PrivateRoute element={Order} />
+                  <Footer />{" "}
+                </>
+              }
+            />
+            <Route path="/about" element={<PrivateRoute element={About} />} />
+            <Route
+              path="/profile"
+              element={<PrivateRoute element={Profile} />}
+            />
+            <Route
+              path="/liveChat"
+              element={<PrivateRoute element={LiveChat} />}
+            />
+            <Route
+              path="/addressmanager"
+              element={<PrivateRoute element={AddressManager} />}
+            />
+            <Route path="/wallet" element={<PrivateRoute element={Wallet} />} />
+          </Routes>
+        </div>
+      </Router>
     </AuthProvider>
   );
 }
