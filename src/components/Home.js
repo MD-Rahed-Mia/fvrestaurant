@@ -12,7 +12,8 @@ const Home = () => {
   const [menus, setMenus] = useState(null);
 
   useEffect(() => {
-    const id = Cookies.get("user");
+    
+    const id = Cookies.get("restaurantId");
 
     async function getRestaurant() {
       if (id === undefined) {

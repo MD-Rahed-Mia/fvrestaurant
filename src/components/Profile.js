@@ -9,7 +9,7 @@ const MainProfile = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const id = Cookies.get("user");
+    const id = Cookies.get("restaurantId");
 
     console.log(id);
 
@@ -22,7 +22,7 @@ const MainProfile = () => {
               "x-auth-token": authToken,
             },
             method: "GET",
-          }
+          },
         );
 
         const result = await apiResponse.json();

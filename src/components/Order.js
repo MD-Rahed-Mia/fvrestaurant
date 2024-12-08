@@ -16,7 +16,8 @@ function Order() {
       setTotal(0);
       setOrders([]);
       setLoading(true);
-      const id = Cookies.get("user");
+      
+      const id = Cookies.get("restaurantId");
       if (id === undefined) {
         setLoading(true);
         return false;
