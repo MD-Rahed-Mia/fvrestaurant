@@ -4,15 +4,16 @@ import axiosInstance from "../utils/AxiosInstance";
 import Cookies from "js-cookie";
 import RestauarntMenuCard from "./restaurant/RestauarntMenuCard";
 import toast from "react-hot-toast";
+import Loading from "./loading/Loading";
 
 const Home = () => {
   const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(null);
 
   // menu list
   const [menus, setMenus] = useState(null);
 
   useEffect(() => {
-    
     const id = Cookies.get("restaurantId");
 
     async function getRestaurant() {
@@ -22,7 +23,9 @@ const Home = () => {
       }
 
       try {
-        const response = await axiosInstance.get(`/restaurant/get-profile?id=${id}`);
+        const response = await axiosInstance.get(
+          `/restaurant/get-profile?id=${id}`,
+        );
         const data = await response.data;
 
         if (data.success) {
@@ -47,21 +50,27 @@ const Home = () => {
     }
 
     async function getMenus() {
+      setLoading(true);
       if (id === undefined) {
         toast.error("Please login properly.");
         return false;
       }
 
       try {
-        const response = await axiosInstance.get(`/restaurant/list-of-menu?id=${id}`);
+        const response = await axiosInstance.get(
+          `/restaurant/list-of-menu?id=${id}`,
+        );
         const data = await response.data;
 
         if (data?.success) {
           setMenus(data.menu);
+
+          setLoading(false);
         } else {
           toast.error("Failed to fetch menu data.");
         }
       } catch (error) {
+        setLoading(false);
         if (error.response) {
           if (error.response.status === 404) {
             toast.error("Menus not found (404).");
@@ -103,10 +112,15 @@ const Home = () => {
       </div>
 
       <div className="py-[120px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-8 gap-12">
-        {menus &&
+        {menus?.length > 0 ? (
           menus?.map((item, index) => {
             return <RestauarntMenuCard menu={item} key={index} />;
-          })}
+          })
+        ) : (
+          <div className="w-full flex items-center justify-center ">
+            <Loading />
+          </div>
+        )}
       </div>
 
       <Footer />

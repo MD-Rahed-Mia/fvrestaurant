@@ -36,7 +36,7 @@ export default function ItemPostPopup({ setEditModal }) {
   async function handleAddMenu(e) {
     e.preventDefault();
 
-    const restaurantId = Cookies.get("user");
+    const restaurantId = Cookies.get("restaurantId");
 
     if (!restaurantId) {
       toast.error("Restaurant Id not found.");

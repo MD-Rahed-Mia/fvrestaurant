@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api_path_url, authToken } from "../secret";
 import Cookies from "js-cookie";
+import { Switch } from "antd";
+import axios from "axios";
+import axiosInstance from "../utils/AxiosInstance";
 
 const MainProfile = () => {
   const profile = [{ name: "Ibrahim", img: "./img/Ibrahimtest.jpg" }];
@@ -46,7 +49,7 @@ const MainProfile = () => {
 
   return (
     <div className="bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center min-h-screen p-2">
-      <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-sm">
+      <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-sm relative">
         {/* Profile Header */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 py-6 px-6">
           <div className="flex justify-center">
@@ -73,6 +76,11 @@ const MainProfile = () => {
                 </svg>
               </div>
             </div>
+          </div>
+
+          {/* active status */}
+          <div className="absolute top-4 right-4">
+            <RestrauranOpen user={user} />
           </div>
           <h2 className="mt-4 text-white text-center text-xl font-bold">
             {user?.name}
@@ -176,7 +184,19 @@ const MainProfile = () => {
             <span className="text-gray-700 font-semibold">Password</span>
             <span className=" text-gray-500">******</span>
           </div>
+
+          {/* opening time */}
+          <div className="flex text-gray-700 font-semibold items-center justify-between px-8 shadow-lg border py-2 rounded-md">
+            <h1>Opening time</h1>
+            <h1 className="text-gray-500">{user?.openingTime}</h1>
+          </div>
+          {/* closing time */}
+          <div className="flex text-gray-700 font-semibold items-center justify-between px-8 shadow-lg border py-2 rounded-md">
+            <h1>Closing time</h1>
+            <h1 className="text-gray-500">{user?.closingTime}</h1>
+          </div>
         </div>
+
         {/* Edit Profile Button */}
         <div className="p-2">
           <Link
@@ -192,3 +212,38 @@ const MainProfile = () => {
 };
 
 export default MainProfile;
+
+function RestrauranOpen({ user }) {
+  const [status, setStatus] = useState(null);
+
+  const onChange = async (checked) => {
+    console.log(`switch to ${checked}`);
+
+    const id = Cookies.get("restaurantId");
+
+    const { data } = await axiosInstance.put(
+      `/restaurant/open-close?id=${id}`,
+      {},
+    );
+
+    console.log(data);
+
+    if (data.success) {
+      setStatus(data.result.isOpen);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.isOpen) {
+      setStatus(true);
+    } else {
+      setStatus(false);
+    }
+  }, [user]);
+
+  return (
+    <>
+      <Switch checked={status} onChange={onChange} />
+    </>
+  );
+}

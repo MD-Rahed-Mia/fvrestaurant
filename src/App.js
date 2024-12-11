@@ -23,8 +23,6 @@ import { useSocket } from "./contexts/SocketContext";
 import Cookies from "js-cookie";
 
 function App() {
- 
-
   return (
     <AuthProvider>
       <ToastContainer position="top-right" theme="dark" />
@@ -91,6 +89,8 @@ function App() {
               path="/addressmanager"
               element={<PrivateRoute element={AddressManager} />}
             />
+
+
             <Route path="/wallet" element={<PrivateRoute element={Wallet} />} />
           </Routes>
         </div>

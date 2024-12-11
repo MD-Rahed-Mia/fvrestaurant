@@ -33,7 +33,7 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
   async function handleAddMenu(e) {
     e.preventDefault();
 
-    const restaurantId = Cookies.get("user");
+    const restaurantId = Cookies.get("restaurantId");
 
     if (!restaurantId) {
       toast.error("Restaurant Id not found.");
@@ -75,7 +75,7 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
           headers: {
             "Content-Type": "form-data/multipart", // Ensure the content type is multipart/form-data
           },
-        }
+        },
       );
 
       console.log(response);

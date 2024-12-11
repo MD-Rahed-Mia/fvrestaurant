@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { LoadScript, GoogleMap, Marker } from "@react-google-maps/api"; // Import Marker
 import { Link } from "react-router-dom";
+import { TimePicker } from "antd";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import dayjs from "dayjs";
+dayjs.extend(customParseFormat);
 
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +17,22 @@ const SignUpForm = () => {
     address: "",
     description: "",
     image: null,
+    openingTime: "",
+    closingTime: "",
   });
+
+  const handleOpeningTime = (time, timeString) => {
+    // console.log(time, timeString);
+
+    setFormData((prev) => ({ ...formData, openingTime: timeString }));
+
+    // console.log(formData);
+  };
+
+  const handleClosingTime = (time, timeString) => {
+    //  console.log(time, timeString);
+    setFormData((prev) => ({ ...formData, closingTime: timeString }));
+  };
 
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -52,6 +71,15 @@ const SignUpForm = () => {
       setErrorMessage("Please enter a valid 11-digit phone number.");
       return false;
     }
+    if (formData.openingTime === "") {
+      setErrorMessage("Please select opening time.");
+      return false;
+    }
+    if (formData.closingTime === "") {
+      setErrorMessage("Please select closing time.");
+      return false;
+    }
+
     if (password.length < 6) {
       setErrorMessage("Password must be at least 6 characters long.");
       return false;
@@ -64,6 +92,7 @@ const SignUpForm = () => {
       setErrorMessage("You must agree to the terms and conditions.");
       return false;
     }
+
     setErrorMessage("");
     return true;
   };
@@ -82,6 +111,8 @@ const SignUpForm = () => {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("lat", coordinates.lat);
       formDataToSend.append("long", coordinates.lng);
+      formDataToSend.append("openingTime", formData.openingTime);
+      formDataToSend.append("closingTime", formData.closingTime);
       if (formData.image) formDataToSend.append("image", formData.image);
 
       try {
@@ -93,7 +124,7 @@ const SignUpForm = () => {
               "x-auth-token": process.env.REACT_APP_API_TOKEN,
             },
             body: formDataToSend,
-          }
+          },
         );
 
         const data = await response.json();
@@ -101,7 +132,7 @@ const SignUpForm = () => {
           alert("Registration successful!");
         } else {
           setErrorMessage(
-            data.message || "Something went wrong. Please try again."
+            data.message || "Something went wrong. Please try again.",
           );
         }
       } catch (error) {
@@ -145,7 +176,7 @@ const SignUpForm = () => {
           mapRef.current.setCenter(userLocation);
           setCoordinates(userLocation);
         },
-        () => alert("Geolocation failed or is not supported by your browser.")
+        () => alert("Geolocation failed or is not supported by your browser."),
       );
     } else {
       alert("Geolocation is not supported by your browser.");
@@ -282,6 +313,26 @@ const SignUpForm = () => {
             />
           </div>
 
+          {/* time format */}
+          <div>
+            <label className="pr-4 inline-block">Opening time</label>
+            <TimePicker
+              className="px-4"
+              onChange={handleOpeningTime}
+              defaultOpenValue={dayjs("00:00:00", "HH:mm")}
+              format="h:mm a"
+            />
+          </div>
+          <div>
+            <label className="pr-4 inline-block">Closing time</label>
+            <TimePicker
+              className="px-4"
+              onChange={handleClosingTime}
+              defaultOpenValue={dayjs("00:00:00", "HH:mm")}
+              format="h:mm a"
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-gray-700">Password</label>
             <div className="relative">
@@ -357,7 +408,6 @@ const SignUpForm = () => {
           </div>
         </form>
 
-        
         <div className="text-center">
           <Link to="/signin" className="text-blue-500">
             Already have an account? Login
