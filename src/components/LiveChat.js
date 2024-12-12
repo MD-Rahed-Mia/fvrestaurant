@@ -47,7 +47,7 @@ const LiveChat = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("sendToUserOrRestaurant", (data) => {
+      socket.on("recieveSMSfromUser", (data) => {
         const parseData = JSON.parse(data);
         console.log(parseData);
         setMessages((prev) => [...prev, parseData]);
