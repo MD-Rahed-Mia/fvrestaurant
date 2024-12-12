@@ -1,30 +1,85 @@
-import React, { useState, useRef, useEffect } from 'react';
+import axios from "axios";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { api_path_url, authToken } from "../secret";
+import { useSocket } from "../contexts/SocketContext";
+import Cookies from "js-cookie";
+import Item from "antd/es/list/Item";
 
 const LiveChat = () => {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const chatWindowRef = useRef(null);
 
+  // socket
+  const { socket } = useSocket();
+
+  // order id
+  const { orderId, userId } = useParams();
+
   // Function to append a new message
-  const appendMessage = (message, sender) => {
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { text: message, sender: sender },
-    ]);
+  const handleOnChange = (e) => {
+    const value = e.target.value;
+
+    setInput(value);
   };
 
   // Handle sending the message
   const handleSendMessage = () => {
-    if (input.trim()) {
-      appendMessage(input, 'user');
-      setInput(''); // Clear the input
+    if (socket) {
+      const message = {
+        userId: userId,
+        message: input,
+        sender: "restaurant",
+        orderId: orderId,
+      };
+      socket.emit("sendMessage", JSON.stringify(message));
+      setMessages((prev) => [...prev, message]);
+      setInput("");
 
-      // Simulate bot response
-      setTimeout(() => {
-        appendMessage('This is a bot response.', 'bot');
-      }, 1000);
+      // if (socket) {
+      //   socket.on("messageSentSuccessful", (data) => {
+      //     setMessages((prev) => [...prev, message]);
+      //   });
+      // }
     }
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("sendToUserOrRestaurant", (data) => {
+        const parseData = JSON.parse(data);
+        console.log(parseData);
+        setMessages((prev) => [...prev, parseData]);
+      });
+    }
+  }, [socket]);
+
+  // fetch existing message
+  useEffect(() => {
+    async function getMessages() {
+      try {
+        const { data } = await axios.get(
+          `${api_path_url}/chat/user/restaurant?id=${orderId}`,
+          {
+            headers: {
+              "x-auth-token": authToken,
+            },
+          }
+        );
+
+        console.log(data);
+
+        if (data.success) {
+          setMessages(data.message);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    getMessages();
+  }, [orderId]);
 
   // Scroll to the bottom of the chat window when new messages arrive
   useEffect(() => {
@@ -33,6 +88,20 @@ const LiveChat = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("recieveMessage", (data) => {
+        const parsedData = JSON.parse(data);
+        setMessages((prev) => [...prev, parsedData.message]); // Append new message
+      });
+
+      // Clean up the listener on unmount
+      return () => {
+        socket.off("recieveMessage");
+      };
+    }
+  }, [socket]);
+
   return (
     <div className="bg-gray-100 h-screen flex justify-center items-center">
       {/* Fullscreen chat container */}
@@ -40,7 +109,7 @@ const LiveChat = () => {
         {/* Chat Header */}
         <div className="bg-blue-600 p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-white">Live Chat</h2>
-          <button className="text-white focus:outline-none">
+          <Link to={"/chat-box"} className="text-white focus:outline-none">
             {/* Add a logout or close button if needed */}
             <svg
               className="w-6 h-6"
@@ -56,7 +125,7 @@ const LiveChat = () => {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </Link>
         </div>
 
         {/* Chat Messages Window */}
@@ -64,16 +133,16 @@ const LiveChat = () => {
           ref={chatWindowRef}
           className="flex-1 bg-gray-100 p-4 overflow-y-auto"
         >
-          {messages.map((message, index) => (
+          {messages.map((msg, index) => (
             <div
               key={index}
               className={`p-3 mb-3 rounded-lg max-w-xs break-words ${
-                message.sender === 'user'
-                  ? 'bg-blue-600 text-white self-end ml-auto'
-                  : 'bg-gray-300 text-gray-800'
+                msg.sender === "restaurant"
+                  ? "bg-blue-600 text-white self-end ml-auto"
+                  : "bg-gray-300 text-gray-800"
               }`}
             >
-              {message.text}
+              {msg.message}
             </div>
           ))}
         </div>
@@ -87,9 +156,9 @@ const LiveChat = () => {
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
               placeholder="Type your message..."
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') handleSendMessage();
+              onChange={handleOnChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSendMessage();
               }}
             />
             <button
@@ -107,4 +176,3 @@ const LiveChat = () => {
 };
 
 export default LiveChat;
-

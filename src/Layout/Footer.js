@@ -31,7 +31,7 @@ function Footer() {
         </Link>
 
         {/* Favorites Icon */}
-        <Link to="/Favorites" className="mr-5">
+        <Link to="/chat-box" className="mr-5">
           <svg
             className="w-7 text-slate-600"
             xmlns="http://www.w3.org/2000/svg"

@@ -49,7 +49,7 @@ function App() {
             {/* Protected Routes */}
 
             <Route
-              path="/favorites"
+              path="/chat-box"
               element={
                 <>
                   <PrivateRoute element={MyChat} />
@@ -82,14 +82,13 @@ function App() {
               element={<PrivateRoute element={Profile} />}
             />
             <Route
-              path="/liveChat"
+              path="/live-chat/:orderId/:userId"
               element={<PrivateRoute element={LiveChat} />}
             />
             <Route
               path="/addressmanager"
               element={<PrivateRoute element={AddressManager} />}
             />
-
 
             <Route path="/wallet" element={<PrivateRoute element={Wallet} />} />
           </Routes>

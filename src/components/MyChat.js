@@ -1,18 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { api_path_url, authToken } from "../secret";
+import Cookies from "js-cookie";
+import ChattingListCard from "./chatting/ChattingListCard";
 
 function MyChat() {
+  const [chatList, setChatList] = useState([]);
+
+  useEffect(() => {
+    async function getChatList() {
+      const id = Cookies.get("restaurantId");
+
+      const { data } = await axios.get(
+        `${api_path_url}/chat/restaurant/chat-list?id=${id}`,
+        {
+          headers: {
+            "x-auth-token": authToken,
+          },
+        }
+      );
+
+      if (data.success) {
+        setChatList(data.chatList);
+      }
+
+      console.log(data);
+    }
+
+    getChatList();
+  }, []);
+
   return (
     <div>
-      <header className="bg-gradient-to-r from-purple-200 to-blue-200 p-4 w-full fixed">
+      <header className="bg-gradient-to-r top-0 left-0 from-purple-200 to-blue-200 p-4 w-full fixed">
         <div className="flex flex-col items-center mb-2 mt-2 justify-between">
           <div className="w-full text-center">
             <span className="font-bold text-blue-700">My Chat</span>
           </div>
         </div>
       </header>
-      <main className="flex items-center justify-center min-h-screen bg-white">
-        <div className="text-center">
-          {/* Icon with Heart */}
+      <div className="mt-20"></div>
+      <main className="flex px-12 flex-col w-full min-h-screen bg-white">
+        {/* <div className="text-center">
+        
           <div className="flex justify-center mb-4">
             <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 rounded-full">
               <svg
@@ -32,8 +62,16 @@ function MyChat() {
             </div>
           </div>
 
-          {/* Text Content */}
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">No chat yet!</h2>
+         
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            No chat yet!
+          </h2>
+        </div> */}
+
+        <div>
+          {chatList?.map((item, index) => {
+            return <ChattingListCard item={item} key={index} />;
+          })}
         </div>
       </main>
     </div>
