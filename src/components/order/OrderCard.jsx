@@ -63,6 +63,8 @@ export default function OrderCard({ order }) {
               ? "px-4 py-1 text-white rounded-full text-sm bg-red-700"
               : order.status === "ready for pickup"
               ? "px-4 py-1 text-white rounded-full text-sm bg-blue-400"
+              : order.status === "accept by rider"
+              ? "px-4 py-1 text-white rounded-full text-sm bg-orange-400"
               : null
           }
         >
@@ -166,6 +168,9 @@ export default function OrderCard({ order }) {
       {order.status === "accept by restaurant" ? (
         <ReadyForPickup id={order._id} />
       ) : null}
+      {order.status === "accept by rider" ? (
+        <ReadyForPickup id={order._id} />
+      ) : null}
     </div>
   );
 }
@@ -241,7 +246,7 @@ function RejectOrderCard({ setIsRejectModalOpen, id }) {
 }
 
 function ReadyForPickup({ id }) {
-  const socket = useSocket();
+  const { socket } = useSocket();
   const confirm = async () => {
     if (!id) {
       return;
