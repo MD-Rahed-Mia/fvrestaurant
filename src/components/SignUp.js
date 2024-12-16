@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { TimePicker } from "antd";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjs from "dayjs";
+import toast from "react-hot-toast";
 dayjs.extend(customParseFormat);
 
 const SignUpForm = () => {
@@ -20,6 +21,9 @@ const SignUpForm = () => {
     openingTime: "",
     closingTime: "",
   });
+
+  // set image
+  const [logoImage, setLogoImage] = useState(null);
 
   const handleOpeningTime = (time, timeString) => {
     // console.log(time, timeString);
@@ -38,8 +42,8 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [coordinates, setCoordinates] = useState({
-    lat: 22.944039,
-    lng: 90.833783,
+    lat: "",
+    lng: "",
   });
   const mapRef = useRef(null);
 
@@ -50,6 +54,18 @@ const SignUpForm = () => {
     const { name, value, checked, type, files } = e.target;
     if (files) {
       setFormData((prev) => ({ ...prev, image: files[0] }));
+
+      // Create a new FileReader instance
+      const reader = new FileReader();
+
+      // Attach an onload event listener
+      reader.onload = (event) => {
+        // Update the preview image with the file's data URL
+        setLogoImage(event.target.result); // event.target.result contains the base64 string
+      };
+
+      // Read the file as a Data URL
+      reader.readAsDataURL(files[0]);
     } else {
       setFormData({
         ...formData,
@@ -93,10 +109,6 @@ const SignUpForm = () => {
       return false;
     }
 
-    if(!coordinates.lat || !coordinates.lng){
-      
-    }
-
     setErrorMessage("");
     return true;
   };
@@ -104,6 +116,12 @@ const SignUpForm = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (coordinates.lat === "" || coordinates.lng === "") {
+      toast.error("Please give location permission and retry.");
+      return false;
+    }
+
     if (validateForm()) {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.fullName);
@@ -177,7 +195,7 @@ const SignUpForm = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-        //  mapRef.current.setCenter(userLocation);
+          //  mapRef.current.setCenter(userLocation);
           setCoordinates(userLocation);
           console.log(coordinates);
         },
@@ -226,6 +244,13 @@ const SignUpForm = () => {
               <span className="text-gray-400 text-sm text-center">
                 Upload Restaurant Logo
               </span>
+              {logoImage && (
+                <img
+                  src={logoImage}
+                  alt="logo"
+                  className="h-32 w-40 absolute top-0 left-0"
+                />
+              )}
               <input
                 type="file"
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
