@@ -93,6 +93,10 @@ const SignUpForm = () => {
       return false;
     }
 
+    if(!coordinates.lat || !coordinates.lng){
+      
+    }
+
     setErrorMessage("");
     return true;
   };
@@ -124,7 +128,7 @@ const SignUpForm = () => {
               "x-auth-token": process.env.REACT_APP_API_TOKEN,
             },
             body: formDataToSend,
-          },
+          }
         );
 
         const data = await response.json();
@@ -132,7 +136,7 @@ const SignUpForm = () => {
           alert("Registration successful!");
         } else {
           setErrorMessage(
-            data.message || "Something went wrong. Please try again.",
+            data.message || "Something went wrong. Please try again."
           );
         }
       } catch (error) {
@@ -173,10 +177,11 @@ const SignUpForm = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          mapRef.current.setCenter(userLocation);
+        //  mapRef.current.setCenter(userLocation);
           setCoordinates(userLocation);
+          console.log(coordinates);
         },
-        () => alert("Geolocation failed or is not supported by your browser."),
+        () => alert("Geolocation failed or is not supported by your browser.")
       );
     } else {
       alert("Geolocation is not supported by your browser.");
@@ -373,6 +378,15 @@ const SignUpForm = () => {
                 {showConfirmPassword ? "Hide" : "Show"}
               </button>
             </div>
+          </div>
+
+          <div>
+            <button
+              onClick={findLocation}
+              className="w-full py-2 px-3 rounded-md text-sm bg-blue-500 text-white"
+            >
+              Get Location
+            </button>
           </div>
 
           <div className="mb-4">
