@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import axiosInstance from "../../utils/AxiosInstance";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import CategoryList from "./CategoryList";
 
 export default function ItemPostPopup({ setEditModal }) {
+  // loading
+  const [postLoading, setPostLoading] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -56,6 +59,9 @@ export default function ItemPostPopup({ setEditModal }) {
     }
 
     try {
+      // set loading
+      setPostLoading(true);
+
       const form = new FormData();
       form.append("name", formData.name);
       form.append("description", formData.description);
@@ -86,12 +92,14 @@ export default function ItemPostPopup({ setEditModal }) {
       if (data.success) {
         toast.success(data.message);
         setEditModal(false);
+        setPostLoading(false);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.error("Error posting item:", error);
       toast.error("Failed to post item.");
+      setPostLoading(false);
     }
   }
 
@@ -155,7 +163,7 @@ export default function ItemPostPopup({ setEditModal }) {
           {/* Category */}
           <label className="block">
             <span className="text-gray-700">Category</span>
-            <select
+            {/* <select
               className="mt-1 block w-full border rounded-md p-2"
               name="category"
               value={formData.category}
@@ -167,7 +175,12 @@ export default function ItemPostPopup({ setEditModal }) {
               <option value="appetizer">Appetizer</option>
               <option value="main-course">Main Course</option>
               <option value="dessert">Dessert</option>
-            </select>
+            </select> */}
+
+            <CategoryList
+              handleOnChange={handleOnChange}
+              categoryValue={formData}
+            />
           </label>
 
           {/* Cuisine */}
@@ -298,7 +311,8 @@ export default function ItemPostPopup({ setEditModal }) {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white rounded-md py-2 mt-4 hover:bg-blue-600"
+            disabled={postLoading}
+            className="w-full disabled:cursor-not-allowed disabled:bg-gray-400 bg-blue-500 text-white rounded-md py-2 mt-4 hover:bg-blue-600"
           >
             Post Item
           </button>

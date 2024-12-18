@@ -5,6 +5,7 @@ import { TimePicker } from "antd";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import SignUpMap from "./map/SignUpMap";
 dayjs.extend(customParseFormat);
 
 const SignUpForm = () => {
@@ -21,6 +22,9 @@ const SignUpForm = () => {
     openingTime: "",
     closingTime: "",
   });
+
+  // loading
+  const [loading, setLoading] = useState(null);
 
   // set image
   const [logoImage, setLogoImage] = useState(null);
@@ -42,10 +46,16 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [coordinates, setCoordinates] = useState({
-    lat: "",
-    lng: "",
+    lat: 22.865322,
+    lng: 91.097044,
   });
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    console.log(
+      `coords are : latitude: ${coordinates.lat} & longitude: ${coordinates.lng}`
+    );
+  }, [coordinates]);
 
   const mapStyles = { height: "300px", width: "100%" };
 
@@ -138,6 +148,7 @@ const SignUpForm = () => {
       if (formData.image) formDataToSend.append("image", formData.image);
 
       try {
+        setLoading(true);
         const response = await fetch(
           `${process.env.REACT_APP_API_URL}/restaurant/register`,
           {
@@ -151,13 +162,16 @@ const SignUpForm = () => {
 
         const data = await response.json();
         if (response.ok) {
+          setLoading(false);
           alert("Registration successful!");
         } else {
+          setLoading(false);
           setErrorMessage(
             data.message || "Something went wrong. Please try again."
           );
         }
       } catch (error) {
+        setLoading(false);
         console.error("Network error:", error);
         setErrorMessage("Network error. Please try again later.");
       }
@@ -406,12 +420,17 @@ const SignUpForm = () => {
           </div>
 
           <div>
-            <button
+            <SignUpMap
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+            />
+
+            {/* <button
               onClick={findLocation}
               className="w-full py-2 px-3 rounded-md text-sm bg-blue-500 text-white"
             >
               Get Location
-            </button>
+            </button> */}
           </div>
 
           <div className="mb-4">
@@ -442,7 +461,9 @@ const SignUpForm = () => {
               type="submit"
               className="w-full py-2 bg-blue-600 text-white rounded-md"
             >
-              Sign Up
+              {
+                loading ? "loading..." : "Sign up"
+              }
             </button>
           </div>
         </form>

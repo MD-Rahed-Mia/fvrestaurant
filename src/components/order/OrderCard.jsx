@@ -3,11 +3,50 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../utils/AxiosInstance";
 import { Button, Popconfirm } from "antd";
 import { useSocket } from "../../contexts/SocketContext";
+import { DateTime } from "luxon";
+import OrderAddons from "./OrderAddons";
 
 export default function OrderCard({ order }) {
   const items = order.items;
 
+  // total amount
+  const [totalAmount, setTotalAmount] = useState(0);
+  useEffect(() => {
+    // Flattening the addons array
+    const totalItemsValue = order?.items.reduce((acc, item) => {
+      return (acc += item.quantity * item.basedPrice);
+    }, 0);
+
+    console.log(
+      `amount is : ${totalItemsValue}, delviery: ${order.deliveryAmount}, addont: ${order.addonTotal}`
+    );
+
+    setTotalAmount(totalItemsValue + Number(order.addonTotal));
+  }, [order]);
+
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+
+  const [addons, setAddons] = useState([]);
+
+  useEffect(() => {
+    // Flattening the addons array
+    const newAddons = order?.items.reduce((acc, item) => {
+      if (item.addons.length > 0) {
+        return [...acc, ...item.addons]; // Spread operator to flatten
+      }
+      return acc;
+    }, []);
+
+    setAddons(newAddons); // Update the state with the flattened array
+  }, [order]);
+
+  useEffect(() => {
+    console.log(addons);
+  }, [addons]);
+
+  useEffect(() => {
+    console.log(`total amount is : ${totalAmount}`);
+  }, [totalAmount]);
 
   useEffect(() => {
     if (isRejectModalOpen) {
@@ -82,7 +121,12 @@ export default function OrderCard({ order }) {
         Payment method:
         <span className="font-extrabold"> {order.peymentMethod || "COD"}</span>
       </p>
-      <p className="text-sm">{order.orderDate}</p>
+      <p className="text-sm">
+        Date:{" "}
+        {DateTime.fromISO(order.orderDate)
+          .setZone("Asia/Dhaka")
+          .toFormat("dd MMM yyyy, hh:mm a")}
+      </p>
 
       {order.status === "cancelled by restaurant" ? (
         <p>
@@ -91,18 +135,18 @@ export default function OrderCard({ order }) {
         </p>
       ) : null}
 
-      <p>
+      <p
+        className="flex
+       items-center  gap-2"
+      >
         Message:
         <span>
-          {order.customerMessage || (
-            <div className="text-sm underline">
-              'customer have no instructions'
-            </div>
-          )}
+          {order.customerMessage || <div className="text-sm">" "</div>}
         </span>
       </p>
 
       <div className="w-full mt-4">
+        <h1>Foods</h1>
         <table className="w-full border text-center">
           <thead>
             <tr>
@@ -126,7 +170,7 @@ export default function OrderCard({ order }) {
                     <td className="text-sm border">{item.name}</td>
                     <td className="border">{item.quantity}</td>
                     <td className="border  px-4">
-                      {item.quantity * item.offerPrice}
+                      {item.quantity * item.basedPrice}
                     </td>
                   </tr>
                 );
@@ -134,9 +178,35 @@ export default function OrderCard({ order }) {
           </tbody>
         </table>
       </div>
-      <p>
-        Amount: <span className="font-extrabold">BDT {order.totalAmount}</span>
-      </p>
+
+      <div>
+        <h1>Addons</h1>
+
+        {/* addons table */}
+        <table className="w-full">
+          <thead>
+            <th className="border px-1 py-1">SL</th>
+            <th className="border px-1 py-1">Name</th>
+            <th className="border px-1 py-1">Quantity</th>
+            <th className="border px-1 py-1">Price</th>
+            <th className="border px-1 py-1">Sub total</th>
+          </thead>
+          <tbody>
+            {addons?.map((add, index) => {
+              return <OrderAddons item={add} index={index} />;
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* <h1>
+        Delivery charge: <span>{order.deliveryAmount}</span>
+      </h1> */}
+
+      <h1>
+        Amount:{" "}
+        <span className="font-extrabold">BDT {totalAmount.toFixed(2)}</span>
+      </h1>
 
       {isRejectModalOpen ? (
         <RejectOrderCard
@@ -262,7 +332,7 @@ function ReadyForPickup({ id }) {
 
       if (data.success) {
         if (socket) {
-          socket.on("notifyParcelReadyForPickup", data);
+          socket.emit("notifyParcelReadyForPickup", data.order);
         }
       }
     } catch (error) {

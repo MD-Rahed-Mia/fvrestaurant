@@ -68,7 +68,7 @@ function App() {
               }
             />
             <Route
-              path="/order"
+              path="/order/:status" 
               element={
                 <>
                   <PrivateRoute element={Order} />

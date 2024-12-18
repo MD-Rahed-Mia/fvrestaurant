@@ -3,9 +3,10 @@ import axiosInstance from "../utils/AxiosInstance";
 import Cookies from "js-cookie";
 import OrderCard from "./order/OrderCard";
 import Loading from "./loading/Loading";
+import { useParams, Link } from "react-router-dom";
 
 function Order() {
-  const [selectedStatus, setSelectedStatus] = useState("new");
+  const { status } = useParams();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(null);
   const [total, setTotal] = useState(0);
@@ -16,14 +17,14 @@ function Order() {
       setTotal(0);
       setOrders([]);
       setLoading(true);
-      
+
       const id = Cookies.get("restaurantId");
       if (id === undefined) {
         setLoading(true);
         return false;
       }
       const response = await axiosInstance.get(
-        `/restaurant/${selectedStatus}-order?id=${id}`
+        `/restaurant/${status}-order?id=${id}`
       );
 
       const data = await response.data;
@@ -49,7 +50,7 @@ function Order() {
   // Use effect to fetch orders whenever the selected status changes
   useEffect(() => {
     fetchOrders();
-  }, [selectedStatus]);
+  }, [status]);
 
   useEffect(() => {
     // console.log(orders);
@@ -69,27 +70,27 @@ function Order() {
 
       {/* Order Status Tabs */}
       <div className="flex  flex-row items-center justify-between font-bold text-gray-800 p-2 text-center mt-20 fixed w-full bg-white capitalize">
-        {["new", "pending", "complete", "cancelled"].map((status) => (
-          <div
-            key={status}
+        {["new", "pending", "complete", "cancelled"].map((currentStatus) => (
+          <Link
+            to={`/order/${currentStatus}`}
+            key={currentStatus}
             className={`w-28 cursor-pointer select-none ${
-              selectedStatus === status
+              status === currentStatus
                 ? "text-blue-500 relative select-none"
                 : ""
             }`}
             onClick={() => {
-              setSelectedStatus(status);
               setTotal(0);
               setOrders([]);
             }}
           >
             <span className="relative">
-              {status}
-              {selectedStatus === status ? (
+              {currentStatus}
+              {status === currentStatus ? (
                 <span className="-top-3 -right-2 absolute">{total}</span>
               ) : null}
             </span>
-          </div>
+          </Link>
         ))}
       </div>
 

@@ -69,7 +69,7 @@ function Footer() {
         </button>
 
         {/* Order Icon */}
-        <Link to="/Order" className="ml-5">
+        <Link to="/order/new" className="ml-5">
           <svg
             className="w-7 text-slate-600"
             xmlns="http://www.w3.org/2000/svg"
