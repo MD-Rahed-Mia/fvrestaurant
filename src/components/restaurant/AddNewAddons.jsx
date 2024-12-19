@@ -3,7 +3,7 @@ import { Button, Modal } from "antd";
 import axiosInstance from "../../utils/AxiosInstance";
 import toast from "react-hot-toast";
 
-export default function AddNewAddons({ id }) {
+export default function AddNewAddons({ id, item }) {
   const [formData, setFormData] = useState({
     title: "",
     price: 0,

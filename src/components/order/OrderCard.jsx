@@ -236,7 +236,7 @@ export default function OrderCard({ order }) {
       {/* food is ready for pickup */}
 
       {order.status === "accept by restaurant" ? (
-        <ReadyForPickup id={order._id} />
+        <h1 className="text-center mt-4">Please wait for rider</h1>
       ) : null}
       {order.status === "accept by rider" ? (
         <ReadyForPickup id={order._id} />

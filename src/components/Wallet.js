@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import axiosInstance from "../utils/AxiosInstance";
 import Cookies from "js-cookie";
+import TransactionHistory from "./wallet/TransactionHistory";
 
 const Wallet = () => {
   const [totalDeliverd, setTotalDelivered] = useState(null);
@@ -113,6 +114,10 @@ const Wallet = () => {
     getWallet();
   }, []);
 
+  useEffect(() => {
+    console.log(wallet);
+  }, [wallet]);
+
   return (
     <div className="p-4 bg-gradient-to-r from-purple-100 to-blue-100 min-h-screen">
       <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-center rounded-md py-4 mb-4 ">
@@ -120,11 +125,15 @@ const Wallet = () => {
       </div>
       <div className="flex flex-row justify-between space-x-4 text-center">
         <div className="border-2 flex flex-col w-full bg-purple-500 rounded-md p-2 text-white">
-          <span className="text-2xl font-black py-2">{wallet?.totalSales} TK</span>
+          <span className="text-2xl font-black py-2">
+            {wallet?.totalSales} TK
+          </span>
           <span>Total Sell</span>
         </div>
         <div className="border-2 flex flex-col w-full bg-blue-500 rounded-md p-2 text-white">
-          <span className="text-2xl font-black py-2">{wallet?.wallet.balance} TK</span>
+          <span className="text-2xl font-black py-2">
+            {wallet?.wallet.balance} TK
+          </span>
           <span>Current Balance</span>
         </div>
       </div>
@@ -143,6 +152,9 @@ const Wallet = () => {
           Latest Order
         </p>
         <div></div>
+      </div>
+      <div>
+        <TransactionHistory transaction={wallet?.wallet.transactions} />
       </div>
     </div>
   );
