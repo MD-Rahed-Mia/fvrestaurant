@@ -51,7 +51,6 @@ export default function ItemPostPopup({ setEditModal }) {
       !formData.name ||
       !formData.description ||
       !formData.category ||
-      !formData.cuisine ||
       !formData.image
     ) {
       toast.error("Please fill in all required fields.");
@@ -66,7 +65,6 @@ export default function ItemPostPopup({ setEditModal }) {
       form.append("name", formData.name);
       form.append("description", formData.description);
       form.append("category", formData.category);
-      form.append("cuisine", formData.cuisine);
       form.append("basedPrice", formData.basedPrice);
       form.append("discountRate", formData.discountRate);
       form.append("status", formData.status);
@@ -184,7 +182,7 @@ export default function ItemPostPopup({ setEditModal }) {
           </label>
 
           {/* Cuisine */}
-          <label className="block">
+          {/* <label className="block">
             <span className="text-gray-700">Cuisine</span>
             <select
               className="mt-1 block w-full border rounded-md p-2"
@@ -199,7 +197,7 @@ export default function ItemPostPopup({ setEditModal }) {
               <option value="chineese">Chinese</option>
               <option value="indian">Indian</option>
             </select>
-          </label>
+          </label> */}
 
           {/* Price */}
           <label className="block">
@@ -236,8 +234,9 @@ export default function ItemPostPopup({ setEditModal }) {
               value={formData.status}
               onChange={handleOnChange}
             >
-              <option value="in-stock">In Stock</option>
-              <option value="out-of-stock">Out of Stock</option>
+              <option value="in stock">In Stock</option>
+              <option value="out of stock">Out of Stock</option>
+              <option value="discontinued">Discontinued</option>
             </select>
           </label>
 

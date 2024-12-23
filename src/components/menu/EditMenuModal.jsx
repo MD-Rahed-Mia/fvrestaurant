@@ -42,12 +42,7 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
     }
 
     // Validate that required fields are filled
-    if (
-      !formData.name ||
-      !formData.description ||
-      !formData.category ||
-      !formData.cuisine
-    ) {
+    if (!formData.name || !formData.description || !formData.category) {
       toast.error("Please fill in all required fields.");
       return false;
     }

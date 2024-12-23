@@ -11,6 +11,88 @@ function Order() {
   const [loading, setLoading] = useState(null);
   const [total, setTotal] = useState(0);
 
+  // new order list
+  const [newOrderCounter, setNewOrderCounter] = useState(0);
+  const [pendingOrderCounter, setPendingOrderCounter] = useState(0);
+  const [completeOrderCounter, setCompleteORderCounter] = useState(0);
+  const [cancelOrderCounter, setCancelOrderCounter] = useState(0);
+
+  async function getNewOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/new-order?id=${id}`
+      );
+
+      if (data) {
+        setNewOrderCounter(data.total);
+      }
+    } catch (error) {}
+  }
+
+  async function getPendingOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/pending-order?id=${id}`
+      );
+
+      console.log(data);
+
+      if (data) {
+        setPendingOrderCounter(data.total);
+      }
+    } catch (error) {}
+  }
+  async function getCompleteOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/complete-order?id=${id}`
+      );
+
+      if (data) {
+        setCompleteORderCounter(data.total);
+      }
+    } catch (error) {}
+  }
+
+  async function getCancelledOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/cancelled-order?id=${id}`
+      );
+
+      if (data) {
+        setCancelOrderCounter(data.total);
+      }
+    } catch (error) {}
+  }
+
+  useEffect(() => {
+    getNewOrderCounter();
+    getPendingOrderCounter();
+    getCompleteOrderCounter();
+    getCancelledOrderCounter();
+  }, []);
+
   // Fetch orders from the server based on the selected status
   const fetchOrders = async () => {
     try {
@@ -70,28 +152,53 @@ function Order() {
 
       {/* Order Status Tabs */}
       <div className="flex  flex-row items-center justify-between font-bold text-gray-800 p-2 text-center mt-20 fixed w-full bg-white capitalize">
-        {["new", "pending", "complete", "cancelled"].map((currentStatus) => (
-          <Link
-            to={`/order/${currentStatus}`}
-            key={currentStatus}
-            className={`w-28 cursor-pointer select-none ${
-              status === currentStatus
-                ? "text-blue-500 relative select-none"
-                : ""
-            }`}
-            onClick={() => {
-              setTotal(0);
-              setOrders([]);
-            }}
-          >
-            <span className="relative">
-              {currentStatus}
-              {status === currentStatus ? (
-                <span className="-top-3 -right-2 absolute">{total}</span>
-              ) : null}
-            </span>
-          </Link>
-        ))}
+        <Link
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
+            status === "new" ? "text-blue-500" : "text-gray-400"
+          }
+             `}
+          to={`/order/new`}
+        >
+          New
+          <span className="top-0 right-[20%] absolute">{newOrderCounter}</span>
+        </Link>
+
+        <Link
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
+            status === "pending" ? "text-blue-500" : "text-gray-400"
+          }
+             `}
+          to={`/order/pending`}
+        >
+          Pending
+          <span className="top-0 right-[20%] absolute">
+            {pendingOrderCounter}
+          </span>
+        </Link>
+        <Link
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
+            status === "complete" ? "text-blue-500" : "text-gray-400"
+          }
+             `}
+          to={`/order/complete`}
+        >
+          Complete
+          <span className="top-0 right-[20%] absolute">
+            {completeOrderCounter}
+          </span>
+        </Link>
+        <Link
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
+            status === "cancelled" ? "text-blue-500" : "text-gray-400"
+          }
+             `}
+          to={`/order/cancelled`}
+        >
+          Cancelled
+          <span className="top-0 right-[20%] absolute">
+            {cancelOrderCounter}
+          </span>
+        </Link>
       </div>
 
       {/* Main Content */}
