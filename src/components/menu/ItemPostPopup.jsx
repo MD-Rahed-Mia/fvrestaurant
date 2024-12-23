@@ -14,7 +14,7 @@ export default function ItemPostPopup({ setEditModal }) {
     category: "",
     cuisine: "",
     basedPrice: "",
-    status: "in-stock",
+    status: "in stock",
     preparationTime: "",
     isVeg: true,
     image: null,

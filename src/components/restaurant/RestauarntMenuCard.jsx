@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../../Layout/Footer";
 import ItemPostPopup from "../menu/ItemPostPopup";
 import EditMenuModal from "../menu/EditMenuModal";
@@ -9,10 +9,15 @@ import AddNewAddons from "./AddNewAddons";
 import { Button } from "antd";
 import EditAddons from "./EditAddons";
 import DeleteAddon from "./DeleteAddons";
+import ItemOnOffSwitch from "./ItemOnOffSwitch";
 
 export default function RestauarntMenuCard({ menu }) {
   const [editModal, setEditModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    console.log(`menu item is : `, menu);
+  }, [menu]);
 
   // console.log(menu.addons);
   return (
@@ -31,6 +36,11 @@ export default function RestauarntMenuCard({ menu }) {
           <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <RxCross2 /> : <BsThreeDots />}
           </button>
+        </div>
+
+        {/* switch for on off */}
+        <div className="absolute top-2 left-2 ">
+          <ItemOnOffSwitch status={menu.status} />
         </div>
 
         {/* menus */}

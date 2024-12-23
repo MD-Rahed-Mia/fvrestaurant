@@ -8,7 +8,7 @@ export default function CategoryList({ handleOnChange, categoryValue }) {
   const [loading, setLoading] = useState(null);
 
   useEffect(() => {
-    async function getCategoryList() {
+    async function getCategoryList() { 
       try {
         setLoading(true);
         const { data } = await axiosInstance.get(`/category/all`);

@@ -15,6 +15,20 @@ export default function NewOrderCard() {
       setNewOrder(data);
     });
   }
+  // total amount
+  const [totalAmount, setTotalAmount] = useState(0);
+  useEffect(() => {
+    // Flattening the addons array
+    const totalItemsValue = newOrder?.items.reduce((acc, item) => {
+      return (acc += item.quantity * item.basedPrice);
+    }, 0);
+
+    // console.log(
+    //   `amount is : ${totalItemsValue}, delviery: ${newOrder.deliveryAmount}, addont: ${newOrder.addonTotal}`
+    // );
+
+    setTotalAmount(totalItemsValue + Number(newOrder?.addonTotal));
+  }, [newOrder]);
 
   // console.log(socket);
 
@@ -27,7 +41,7 @@ export default function NewOrderCard() {
       }
 
       const response = await axiosInstance.put(
-        `/restaurant/accept-order-by-restaurant?order-id=${id}`,
+        `/restaurant/accept-order-by-restaurant?order-id=${id}`
       );
       console.log(await response.data);
 
@@ -40,7 +54,7 @@ export default function NewOrderCard() {
         if (socket) {
           socket.emit("sendOrderToRider", data.result);
         }
-        
+
         setIsActive(false);
         setNewOrder(null);
       } else {
@@ -107,7 +121,7 @@ export default function NewOrderCard() {
             <h1>
               Amount-
               <span className="font-extrabold text-2xl mt-4">
-                BDT {newOrder?.totalAmount}
+                BDT {totalAmount}
               </span>
             </h1>
             <h1>

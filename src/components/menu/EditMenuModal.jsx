@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/AxiosInstance";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import CategoryList from "./CategoryList";
 
 export default function EditMenuModal({ menu, setEditModal, editModal }) {
   const [formData, setFormData] = useState({
@@ -75,7 +76,7 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
           headers: {
             "Content-Type": "form-data/multipart", // Ensure the content type is multipart/form-data
           },
-        },
+        }
       );
 
       console.log(response);
@@ -150,7 +151,7 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
           {/* Category */}
           <label className="block">
             <span className="text-gray-700">Category</span>
-            <select
+            {/* <select
               className="mt-1 block w-full border rounded-md p-2"
               name="category"
               value={formData.category}
@@ -162,11 +163,16 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
               <option value="appetizer">Appetizer</option>
               <option value="main-course">Main Course</option>
               <option value="dessert">Dessert</option>
-            </select>
+            </select> */}
+
+            <CategoryList
+              handleOnChange={handleOnChange}
+              categoryValue={formData}
+            />
           </label>
 
           {/* Cuisine */}
-          <label className="block">
+          {/* <label className="block">
             <span className="text-gray-700">Cuisine</span>
             <select
               className="mt-1 block w-full border rounded-md p-2"
@@ -181,7 +187,7 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
               <option value="chineese">Chinese</option>
               <option value="indian">Indian</option>
             </select>
-          </label>
+          </label> */}
 
           {/* Price */}
           <label className="block">
@@ -205,8 +211,9 @@ export default function EditMenuModal({ menu, setEditModal, editModal }) {
               value={formData.status}
               onChange={handleOnChange}
             >
-              <option value="in-stock">In Stock</option>
-              <option value="out-of-stock">Out of Stock</option>
+              <option value="in stock">In Stock</option>
+              <option value="out of stock">Out of Stock</option>
+              <option value="discontinue">Discontinue</option>
             </select>
           </label>
 
