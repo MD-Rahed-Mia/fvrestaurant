@@ -21,6 +21,7 @@ import { Toaster } from "react-hot-toast";
 import NewOrderCard from "./components/order/NewOrderCard";
 import { useSocket } from "./contexts/SocketContext";
 import Cookies from "js-cookie";
+import ToasterNotifation from "./components/notification/Toaster";
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
       {/* new order card */}
 
       <NewOrderCard />
+
+      {/* notification */}
+      <ToasterNotifation />
 
       <Toaster />
       <Router>
@@ -68,7 +72,7 @@ function App() {
               }
             />
             <Route
-              path="/order/:status" 
+              path="/order/:status"
               element={
                 <>
                   <PrivateRoute element={Order} />

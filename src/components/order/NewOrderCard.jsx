@@ -10,9 +10,16 @@ export default function NewOrderCard() {
 
   const { socket } = useSocket();
 
+  // play audio
+  function playAudio() {
+    const audio = new Audio("/audio/new_order_sound.wav");
+    audio.play();
+  }
+
   if (socket) {
     socket.on("receiveNewOrder", (data) => {
       setNewOrder(data);
+      playAudio();
     });
   }
   // total amount
