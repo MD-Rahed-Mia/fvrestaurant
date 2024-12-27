@@ -39,6 +39,39 @@ export default function NewOrderCard() {
 
   // console.log(socket);
 
+  // handle reject order
+  async function handleRejectOrder(id) {
+    try {
+      if (!id) {
+        toast.error("required order id.");
+        return;
+      }
+
+      const response = await axiosInstance.put(
+        `/restaurant/cancel-order-by-restaurant?order-id=${id}`
+      );
+      // console.log(await response.data);
+
+      const data = await response.data;
+
+      if (data?.success) {
+        toast.success(data.message);
+
+        // if (socket) {
+        //   socket.emit("sendOrderToRider", data.result);
+        // }
+
+        setIsActive(false);
+        setNewOrder(null);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      throw new Error(error);
+    }
+  }
+
   // handle accept order
   async function handleAcceptOrder(id) {
     try {
@@ -139,7 +172,10 @@ export default function NewOrderCard() {
             </h1>
 
             <div className="w-full flex  mt-4 items-center justify-center gap-5">
-              <button className="px-4 py-2 rounded-full text-center text-white hover:bg-red-200 bg-red-500">
+              <button
+                onClick={() => handleRejectOrder(newOrder?._id)}
+                className="px-4 py-2 rounded-full text-center text-white hover:bg-red-200 bg-red-500"
+              >
                 Decline
               </button>
               <button
