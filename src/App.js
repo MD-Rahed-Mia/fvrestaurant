@@ -22,6 +22,7 @@ import NewOrderCard from "./components/order/NewOrderCard";
 import { useSocket } from "./contexts/SocketContext";
 import Cookies from "js-cookie";
 import ToasterNotifation from "./components/notification/Toaster";
+import ChangePassword from "./components/ChangePassword";
 
 function App() {
   return (
@@ -85,6 +86,15 @@ function App() {
               path="/profile"
               element={<PrivateRoute element={Profile} />}
             />
+            <Route
+              path="/change-password"
+              element={<>
+                <PrivateRoute element={ChangePassword} />
+                <Footer /></>}
+            />
+
+
+
             <Route
               path="/live-chat/:orderId/:userId"
               element={<PrivateRoute element={LiveChat} />}

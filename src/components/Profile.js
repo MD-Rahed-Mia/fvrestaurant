@@ -5,11 +5,15 @@ import Cookies from "js-cookie";
 import { Switch } from "antd";
 import axios from "axios";
 import axiosInstance from "../utils/AxiosInstance";
-
+import UpdateOpeningClosing from "./UpdateOpeningClosing";
+import { BsFillPencilFill } from "react-icons/bs";
 const MainProfile = () => {
   const profile = [{ name: "Ibrahim", img: "./img/Ibrahimtest.jpg" }];
 
   const [user, setUser] = useState(null);
+
+  // opening modal
+  const [openingTime, setOpeningTime] = useState(false);
 
   useEffect(() => {
     const id = Cookies.get("restaurantId");
@@ -164,7 +168,7 @@ const MainProfile = () => {
           </div>
 
           {/* Password */}
-          <div className="flex items-center space-x-2 rounded-lg shadow-md p-2">
+          <Link to={"/change-password"} className="flex items-center space-x-2 rounded-lg shadow-md p-2">
             <div className="bg-purple-100 p-2 rounded-full">
               <svg
                 className="h-6 w-6 text-purple-500"
@@ -183,17 +187,27 @@ const MainProfile = () => {
             </div>
             <span className="text-gray-700 font-semibold">Password</span>
             <span className=" text-gray-500">******</span>
-          </div>
+          </Link>
 
           {/* opening time */}
           <div className="flex text-gray-700 font-semibold items-center justify-between px-8 shadow-lg border py-2 rounded-md">
             <h1>Opening time</h1>
-            <h1 className="text-gray-500">{user?.openingTime}</h1>
+            <h1 className="text-gray-500 cursor-pointer">{user?.openingTime}</h1> <h1 onClick={() => setOpeningTime(!openingTime)}>
+              <BsFillPencilFill />
+            </h1>
+
+
+            {
+              openingTime ? <UpdateOpeningClosing setOpeningTime={setOpeningTime} openingTime={openingTime} /> : null
+            }
+
           </div>
           {/* closing time */}
           <div className="flex text-gray-700 font-semibold items-center justify-between px-8 shadow-lg border py-2 rounded-md">
             <h1>Closing time</h1>
-            <h1 className="text-gray-500">{user?.closingTime}</h1>
+            <h1 className="text-gray-500 cursor-pointer">{user?.closingTime}</h1> <h1 onClick={() => setOpeningTime(!openingTime)}>
+              <BsFillPencilFill />
+            </h1>
           </div>
         </div>
 
