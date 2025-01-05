@@ -6,7 +6,7 @@ import { useSocket } from "../../contexts/SocketContext";
 import { DateTime } from "luxon";
 import OrderAddons from "./OrderAddons";
 
-export default function OrderCard({ order }) {
+export default function OrderCard({ order, fetchOrders }) {
   const items = order.items;
 
   // total amount
@@ -74,6 +74,7 @@ export default function OrderCard({ order }) {
 
       if (data?.success) {
         toast.success(data.message);
+        fetchOrders()
       } else {
         toast.error(data.message);
       }
@@ -95,16 +96,16 @@ export default function OrderCard({ order }) {
             order.status === "delivered"
               ? "px-4 py-1 text-white rounded-full text-sm bg-blue-700"
               : order.status === "pending"
-              ? "px-4 py-1 text-white rounded-full text-sm bg-orange-700"
-              : order.status === "accept by restaurant"
-              ? "px-4 py-1 text-white rounded-full text-sm bg-orange-400"
-              : order.status === "cancelled by restaurant"
-              ? "px-4 py-1 text-white rounded-full text-sm bg-red-700"
-              : order.status === "ready for pickup"
-              ? "px-4 py-1 text-white rounded-full text-sm bg-blue-400"
-              : order.status === "accept by rider"
-              ? "px-4 py-1 text-white rounded-full text-sm bg-orange-400"
-              : null
+                ? "px-4 py-1 text-white rounded-full text-sm bg-orange-700"
+                : order.status === "accept by restaurant"
+                  ? "px-4 py-1 text-white rounded-full text-sm bg-orange-400"
+                  : order.status === "cancelled by restaurant"
+                    ? "px-4 py-1 text-white rounded-full text-sm bg-red-700"
+                    : order.status === "ready for pickup"
+                      ? "px-4 py-1 text-white rounded-full text-sm bg-blue-400"
+                      : order.status === "accept by rider"
+                        ? "px-4 py-1 text-white rounded-full text-sm bg-orange-400"
+                        : null
           }
         >
           {order.status}
@@ -212,6 +213,7 @@ export default function OrderCard({ order }) {
         <RejectOrderCard
           setIsRejectModalOpen={setIsRejectModalOpen}
           id={order._id}
+          fetchOrders={fetchOrders}
         />
       ) : null}
 
@@ -245,7 +247,7 @@ export default function OrderCard({ order }) {
   );
 }
 
-function RejectOrderCard({ setIsRejectModalOpen, id }) {
+function RejectOrderCard({ setIsRejectModalOpen, id, fetchOrders }) {
   const [reason, setReason] = useState({ reason: "" });
 
   // handle reason
@@ -274,6 +276,8 @@ function RejectOrderCard({ setIsRejectModalOpen, id }) {
       if (data?.success) {
         toast.success(data.message);
         setIsRejectModalOpen(false);
+        fetchOrders()
+
       } else {
         toast.error(data.message);
       }

@@ -17,81 +17,6 @@ function Order() {
   const [completeOrderCounter, setCompleteORderCounter] = useState(0);
   const [cancelOrderCounter, setCancelOrderCounter] = useState(0);
 
-  async function getNewOrderCounter() {
-    const id = Cookies.get("restaurantId");
-    if (id === undefined) {
-      setLoading(true);
-      return false;
-    }
-    try {
-      const { data } = await axiosInstance.get(
-        `/restaurant/new-order?id=${id}`
-      );
-
-      if (data) {
-        setNewOrderCounter(data.total);
-      }
-    } catch (error) {}
-  }
-
-  async function getPendingOrderCounter() {
-    const id = Cookies.get("restaurantId");
-    if (id === undefined) {
-      setLoading(true);
-      return false;
-    }
-    try {
-      const { data } = await axiosInstance.get(
-        `/restaurant/pending-order?id=${id}`
-      );
-
-      console.log(data);
-
-      if (data) {
-        setPendingOrderCounter(data.total);
-      }
-    } catch (error) {}
-  }
-  async function getCompleteOrderCounter() {
-    const id = Cookies.get("restaurantId");
-    if (id === undefined) {
-      setLoading(true);
-      return false;
-    }
-    try {
-      const { data } = await axiosInstance.get(
-        `/restaurant/complete-order?id=${id}`
-      );
-
-      if (data) {
-        setCompleteORderCounter(data.total);
-      }
-    } catch (error) {}
-  }
-
-  async function getCancelledOrderCounter() {
-    const id = Cookies.get("restaurantId");
-    if (id === undefined) {
-      setLoading(true);
-      return false;
-    }
-    try {
-      const { data } = await axiosInstance.get(
-        `/restaurant/cancelled-order?id=${id}`
-      );
-
-      if (data) {
-        setCancelOrderCounter(data.total);
-      }
-    } catch (error) {}
-  }
-
-  useEffect(() => {
-    getNewOrderCounter();
-    getPendingOrderCounter();
-    getCompleteOrderCounter();
-    getCancelledOrderCounter();
-  }, []);
 
   // Fetch orders from the server based on the selected status
   const fetchOrders = async () => {
@@ -129,15 +54,89 @@ function Order() {
     }
   };
 
+  async function getNewOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/new-order?id=${id}`
+      );
+
+      if (data) {
+        setNewOrderCounter(data.total);
+      }
+    } catch (error) { }
+  }
+
+  async function getPendingOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/pending-order?id=${id}`
+      );
+
+      console.log(data);
+
+      if (data) {
+        setPendingOrderCounter(data.total);
+      }
+    } catch (error) { }
+  }
+  async function getCompleteOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/complete-order?id=${id}`
+      );
+
+      if (data) {
+        setCompleteORderCounter(data.total);
+      }
+    } catch (error) { }
+  }
+
+  async function getCancelledOrderCounter() {
+    const id = Cookies.get("restaurantId");
+    if (id === undefined) {
+      setLoading(true);
+      return false;
+    }
+    try {
+      const { data } = await axiosInstance.get(
+        `/restaurant/cancelled-order?id=${id}`
+      );
+
+      if (data) {
+        setCancelOrderCounter(data.total);
+      }
+    } catch (error) { }
+  }
+
+  useEffect(() => {
+    getNewOrderCounter();
+    getPendingOrderCounter();
+    getCompleteOrderCounter();
+    getCancelledOrderCounter();
+  }, [fetchOrders]);
+
+
+
   // Use effect to fetch orders whenever the selected status changes
   useEffect(() => {
     fetchOrders();
   }, [status]);
 
-  useEffect(() => {
-    // console.log(orders);
-    //  setTotal(orders?.total);
-  }, [orders]);
 
   return (
     <div>
@@ -153,9 +152,8 @@ function Order() {
       {/* Order Status Tabs */}
       <div className="flex  flex-row items-center justify-between font-bold text-gray-800 p-2 text-center mt-20 fixed w-full bg-white capitalize">
         <Link
-          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
-            status === "new" ? "text-blue-500" : "text-gray-400"
-          }
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${status === "new" ? "text-blue-500" : "text-gray-400"
+            }
              `}
           to={`/order/new`}
         >
@@ -164,9 +162,8 @@ function Order() {
         </Link>
 
         <Link
-          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
-            status === "pending" ? "text-blue-500" : "text-gray-400"
-          }
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${status === "pending" ? "text-blue-500" : "text-gray-400"
+            }
              `}
           to={`/order/pending`}
         >
@@ -176,9 +173,8 @@ function Order() {
           </span>
         </Link>
         <Link
-          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
-            status === "complete" ? "text-blue-500" : "text-gray-400"
-          }
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${status === "complete" ? "text-blue-500" : "text-gray-400"
+            }
              `}
           to={`/order/complete`}
         >
@@ -188,9 +184,8 @@ function Order() {
           </span>
         </Link>
         <Link
-          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${
-            status === "cancelled" ? "text-blue-500" : "text-gray-400"
-          }
+          className={`w-28 py-3 px-2 relative cursor-pointer select-none ${status === "cancelled" ? "text-blue-500" : "text-gray-400"
+            }
              `}
           to={`/order/cancelled`}
         >
@@ -212,7 +207,7 @@ function Order() {
           {orders.length > 0 ? (
             <ul className="w-full max-w-md">
               {orders.map((order, index) => {
-                return <OrderCard key={index} order={order} />;
+                return <OrderCard key={index} order={order} fetchOrders={fetchOrders} />;
               })}
             </ul>
           ) : null}
