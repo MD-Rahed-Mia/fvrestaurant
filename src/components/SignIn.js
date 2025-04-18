@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext"; // Import AuthContext
 import axiosInstance from "../utils/AxiosInstance";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const SignInForm = () => {
   const [formData, setFormData] = useState({
@@ -45,17 +46,16 @@ const SignInForm = () => {
     e.preventDefault();
     if (validateSignInForm()) {
       try {
-        const response = await axiosInstance.post("/restaurant/login", {
+        const { data } = await axiosInstance.post("/restaurant/login", {
           phone: formData.email,
           password: formData.password,
         });
 
-        console.log(response.data);
-        const data = await response.data.result;
         if (data.success) {
           // console.log(data);
           localStorage.setItem("token", data.token);
-          Cookies.set("restaurantId", data.restaurant.id);
+          const decodeToken = jwtDecode(data.token);
+          Cookies.set("restaurantId", decodeToken.userid);
           login(data.token);
           navigate("/");
           toast.success("Login successful.");
@@ -63,18 +63,7 @@ const SignInForm = () => {
           toast.error("Login failed.");
         }
       } catch (error) {
-        if (error.response) {
-          // console.log(error.response);
-
-          const { data } = error.response;
-
-          console.log(data);
-
-          toast.error(data.message);
-          toast.error(data.errorMessage);
-        }
-
-        console.error("Network error:", error);
+        throw Error(error);
       }
     }
   };
