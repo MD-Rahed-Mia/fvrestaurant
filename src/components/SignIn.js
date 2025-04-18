@@ -55,7 +55,7 @@ const SignInForm = () => {
           // console.log(data);
           localStorage.setItem("token", data.token);
           const decodeToken = jwtDecode(data.token);
-          Cookies.set("restaurantId", decodeToken.userid);
+          Cookies.set("restaurantId", decodeToken.userId);
           login(data.token);
           navigate("/");
           toast.success("Login successful.");
